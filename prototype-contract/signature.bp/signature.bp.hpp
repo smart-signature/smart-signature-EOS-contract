@@ -77,7 +77,8 @@ class sign : public council {
         uint64_t ref_fee;
         uint64_t k;        
         uint64_t price;
-        uint64_t anti_bot_fee;
+        uint64_t last_anti_bot_fee = 0;
+        uint64_t anti_bot_init_fee;
         time anti_bot_timer;
         time last_buy_timer;        
         time st;
@@ -89,10 +90,10 @@ class sign : public council {
     
     // @abi table players
     struct player_info {
-        uint64_t ref_income;
-        uint64_t staked_income;
-        uint64_t article_income;
-        uint64_t sponsor_income;
+        int64_t ref_income;
+        int64_t staked_income;
+        int64_t article_income;
+        int64_t sponsor_income;
     };
         
     // @abi table global

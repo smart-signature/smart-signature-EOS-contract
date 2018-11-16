@@ -9,13 +9,10 @@ void sign::init() {
     require_auth(_self);
 }  
 
-
 void sign::claim(account_name from) {
     require_auth(from);
-
     singleton_players _players(_self, from);
     auto p = _players.get_or_create(_self, player_info{});
-
 /*
     if (p.pool_profit > 0) {
         send_defer_action(
@@ -27,7 +24,6 @@ void sign::claim(account_name from) {
             )
         );
     }
-
     p.pool_profit = 0;
     _players.set(p, _self); */   
 }
@@ -62,36 +58,51 @@ void sign::create(account_name from, extended_asset in, const vector<string>& pa
         s.ref_fee = 50;
         s.k = 350;
         s.price = 1000;
-        s.anti_bot_fee = 500;
-        s.anti_bot_timer = 5*60*60;
-        s.last_buy_timer = 0;
+//        s.last_anti_bot_fee = 0;
+//        s.anti_bot_fee = 500;
+//        s.anti_bot_timer = 5*60*60;
+//        s.last_buy_timer = 0;
         s.st = now();
     });    
 }
 
 void sign::sponsor(account_name from, extended_asset in, const vector<string>& params) {
     require_auth(from);
-    /*
+
     eosio_assert(in.contract == N(eosio.token), "only true EOS token is allowed");
-    eosio_assert(in.symbol == EOS_SYMBOL, "only true EOS token is allowed");
-   
+    eosio_assert(in.symbol == EOS_SYMBOL, "only true EOS token is allowed");   
     eosio_assert(params.size() >= 2, "No ID found..");
     auto id = string_to_price(params[1]);
 
-    auto itr = _land.find(id);
-    eosio_assert(itr != _land.end(), "no land exist");
-    eosio_assert(in.amount >= itr->next_price(), "no enough eos");
-    eosio_assert(from != itr->owner, "cannot buy with yourself");
+    auto itr = _sign.find(id);
+    eosio_assert(itr != _sign.end(), "no article exist");
+    eosio_assert(in.amount >= itr->next_price(), "price is not equal");
+    eosio_assert(from != itr->owner, "cannot buy from yourself");
+
+    singleton_players _creator(_self, itr->creator);
+    singleton_players _last_players(_self, itr->owner);    
+    singleton_players _players(_self, from);
+    auto c = _creator.get_or_create(_self, player_info{});
+    auto lp = _last_players.get_or_create(_self, player_info{});
+    auto p = _players.get_or_create(_self, player_info{});
 
     auto exceed = in.amount - itr->next_price();
+    p.sponsor_income += exceed;
 
-    action(
-        permission_level{_self, N(active)},
-        N(eosio.token), N(transfer),
-        make_tuple(_self, from, asset(exceed, EOS_SYMBOL),
-            std::string("exceed EOS refund"))
-    ).send();
-    */
+    auto delta = itr->next_price() - itr->price;
+    auto article_income = delta * itr->creator_fee / 1000;
+    c.article_income += article_income;
+    delta -= article_income;
+    lp.sponsor_income += delta;
+
+    _sign.modify(itr, 0, [&](auto &s) {
+        s.owner = from;
+        s.price = itr->next_price();
+    });
+
+    _last_players.set(lp, _self);  
+    _players.set(p, _self);      
+    _creator.set(c, _self);
 }
 
 void sign::buy(account_name from, extended_asset in, const vector<string>& params) {
