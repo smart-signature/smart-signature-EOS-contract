@@ -1,2 +1,2 @@
-# smart-gift
-Gift library based on smart signature
+# Introduction
+Yet Another Prototype Contract
