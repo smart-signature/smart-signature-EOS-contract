@@ -58,11 +58,11 @@ void sign::create(account_name from, extended_asset in, const vector<string>& pa
         s.ref_fee = 50;
         s.k = 350;
         s.price = 1000;
+        s.st = now();        
 //        s.last_anti_bot_fee = 0;
 //        s.anti_bot_fee = 500;
 //        s.anti_bot_timer = 5*60*60;
 //        s.last_buy_timer = 0;
-        s.st = now();
     });    
 }
 
@@ -72,10 +72,10 @@ void sign::sponsor(account_name from, extended_asset in, const vector<string>& p
     eosio_assert(in.contract == N(eosio.token), "only true EOS token is allowed");
     eosio_assert(in.symbol == EOS_SYMBOL, "only true EOS token is allowed");   
     eosio_assert(params.size() >= 2, "No ID found..");
-    auto id = string_to_price(params[1]);
 
+    auto id = string_to_price(params[1]);
     auto itr = _sign.find(id);
-    eosio_assert(itr != _sign.end(), "no article exist");
+    eosio_assert(itr != _sign.end(), "this article is not exist");
     eosio_assert(in.amount >= itr->next_price(), "price is not equal");
     eosio_assert(from != itr->owner, "cannot buy from yourself");
 
