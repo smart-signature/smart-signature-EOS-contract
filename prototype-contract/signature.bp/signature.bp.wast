@@ -17625,10 +17625,10 @@
   (i64.store offset=120
    (get_local $17)
    (i64.add
-    (tee_local $6
+    (tee_local $11
      (i64.div_u
       (i64.mul
-       (tee_local $16
+       (tee_local $6
         (i64.sub
          (get_local $13)
          (get_local $11)
@@ -17644,6 +17644,12 @@
     (i64.load offset=120
      (get_local $17)
     )
+   )
+  )
+  (set_local $16
+   (i64.sub
+    (get_local $6)
+    (get_local $11)
    )
   )
   (block $label$20
@@ -17960,7 +17966,7 @@
         (i64.load offset=32
          (get_local $14)
         )
-        (get_local $16)
+        (get_local $6)
        )
        (i64.const 1000)
       )
@@ -17981,12 +17987,6 @@
     )
     (i64.load
      (get_local $0)
-    )
-   )
-   (set_local $13
-    (i64.sub
-     (get_local $16)
-     (get_local $6)
     )
    )
    (block $label$30
@@ -18072,7 +18072,7 @@
    )
    (set_local $16
     (i64.sub
-     (get_local $13)
+     (get_local $16)
      (get_local $11)
     )
    )

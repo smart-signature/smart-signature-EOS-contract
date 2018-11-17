@@ -119,23 +119,25 @@ void sign::sponsor(account_name from, extended_asset in, const vector<string>& p
     p.sponsor_income += exceed;
 
     auto delta = itr->next_price() - itr->price;
-    auto article_income = delta * itr->creator_fee / 1000;
-    c.article_income += article_income;
+    auto delta_origin = delta;
 
+    auto article_income = delta_origin * itr-> creator_fee / 1000;
+    c.article_income += article_income;
+    delta -=  article_income;
 
     if (params.size() >= 3) {
         auto ref = eosio::string_to_name(params[2].c_str());
         if (is_account(ref) && ref != from) {   
             singleton_players _refer(_self, ref);
             auto r = _refer.get_or_create(_self, player_info{});
-            auto refer_income = delta * itr->ref_fee / 1000;
-            r.ref_income += refer_income;
 
-            delta = delta - article_income - refer_income;
+            auto refer_income = delta_origin * itr->ref_fee / 1000;
+            r.ref_income += refer_income;
+            delta -= refer_income;
 
             _refer.set(r, _self);
         }
-    }   
+    }
 
     lp.sponsor_income += delta;
 
