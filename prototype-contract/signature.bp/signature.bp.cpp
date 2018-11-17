@@ -50,20 +50,49 @@ void sign::create(account_name from, extended_asset in, const vector<string>& pa
     eosio_assert(in.contract == N(eosio.token), "only true EOS token is allowed");
     eosio_assert(in.symbol == EOS_SYMBOL, "only true EOS token is allowed");    
     eosio_assert(in.amount >= 1000, "you need at least 0.1 EOS to create an new signature");
-    _sign.emplace(_self, [&](auto &s) {
-        s.id = _sign.available_primary_key();
-        s.creator = from;
-        s.owner = from;
-        s.creator_fee = 20;
-        s.ref_fee = 50;
-        s.k = 350;
-        s.price = 1000;
-        s.st = now();        
-//        s.last_anti_bot_fee = 0;
-//        s.anti_bot_fee = 500;
-//        s.anti_bot_timer = 5*60*60;
-//        s.last_buy_timer = 0;
-    });    
+
+    if(params.size() <= 1) {
+        _sign.emplace(_self, [&](auto &s) {
+            s.id = _sign.available_primary_key();
+            s.creator = from;
+            s.owner = from;
+            s.creator_fee = 20;
+            s.ref_fee = 50;
+            s.k = 350;
+            s.price = 1000;
+            s.st = now();        
+    //        s.last_anti_bot_fee = 0;
+    //        s.anti_bot_fee = 500;
+    //        s.anti_bot_timer = 5*60*60;
+    //        s.last_buy_timer = 0;
+        }); 
+    } else {
+        eosio_assert(params.size() == 5, "need 4 params");
+        auto ref_fee = string_to_price(params[1]);
+        auto k = string_to_price(params[2]);
+        auto price = string_to_price(params[3]);
+        auto st = string_to_price(params[4]);
+
+        eosio_assert(ref_fee >= 0 && ref_fee <= 500, "illegal ref_fee");
+        eosio_assert(k >= 10 && k <= 1000, "illegal k");
+        eosio_assert(price >= 1000 && price <= 10000000, "illegal price");
+        eosio_assert(st >= now() && st <= now() + 3652460 * 60, "illegal st");
+
+        _sign.emplace(_self, [&](auto &s) {
+            s.id = _sign.available_primary_key();
+            s.creator = from;
+            s.owner = from;
+            s.creator_fee = 20;
+            s.ref_fee = ref_fee;
+            s.k = k;
+            s.price = price;
+            s.st = st;        
+    //        s.last_anti_bot_fee = 0;
+    //        s.anti_bot_fee = 500;
+    //        s.anti_bot_timer = 5*60*60;
+    //        s.last_buy_timer = 0;
+        });        
+    }
 }
 
 void sign::sponsor(account_name from, extended_asset in, const vector<string>& params) {
@@ -92,7 +121,22 @@ void sign::sponsor(account_name from, extended_asset in, const vector<string>& p
     auto delta = itr->next_price() - itr->price;
     auto article_income = delta * itr->creator_fee / 1000;
     c.article_income += article_income;
-    delta -= article_income;
+
+
+    if (params.size() >= 3) {
+        auto ref = eosio::string_to_name(params[2].c_str());
+        if (is_account(ref) && ref != from) {   
+            singleton_players _refer(_self, ref);
+            auto r = _refer.get_or_create(_self, player_info{});
+            auto refer_income = delta * itr->ref_fee / 1000;
+            r.ref_income += refer_income;
+
+            delta = delta - article_income - refer_income;
+
+            _refer.set(r, _self);
+        }
+    }   
+
     lp.sponsor_income += delta;
 
     _sign.modify(itr, 0, [&](auto &s) {
