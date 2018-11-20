@@ -19,7 +19,7 @@ void sign::claim(account_name from) {
             permission_level{_self, N(active)},
             N(dacincubator), N(transfer),
             make_tuple(_self, from, 
-                asset(p.pool_profit, CMU_SYMBOL),
+                asset(p.pool_profit, SST_SYMBOL),
                 string("claim")
             )
         );
@@ -158,8 +158,8 @@ void sign::buy(account_name from, extended_asset in, const vector<string>& param
 }
 
 void sign::sell(account_name from, extended_asset in, const vector<string>& params) {
-    eosio_assert(in.contract == N(dacincubator), "only true CMU token is allowed");
-    eosio_assert(in.symbol == CMU_SYMBOL, "only true CMU token is allowed");
+    eosio_assert(in.contract == N(dacincubator), "only true SST token is allowed");
+    eosio_assert(in.symbol == SST_SYMBOL, "only true SST token is allowed");
    
     asset out;
     _market.modify(_market.begin(), 0, [&](auto &m) {
@@ -197,12 +197,12 @@ void sign::onTransfer(account_name from, account_name to, extended_asset quantit
     }    
 
     if (params[0] == "buy") {
-        //buy(from, quantity, params);
+        buy(from, quantity, params);
         return;
     }    
 
     if (params[0] == "sell") {
-        //sell(from, quantity, params);
+        sell(from, quantity, params);
         return;
     }
 
