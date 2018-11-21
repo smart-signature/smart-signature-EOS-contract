@@ -67,7 +67,7 @@ class council : public eosio::contract {
         require_auth(from);
         singleton_voters _voters(_self, from);
         auto v = _voters.get_or_create(_self, voter_info{});
-        eosio_assert(amount <= v.staked, "don't have enough CMU for unstake");
+        eosio_assert(amount <= v.staked, "don't have enough SST for unstake");
         // TODO(minakokojima): unvote(v);
 
         action( // winner winner chicken dinner
