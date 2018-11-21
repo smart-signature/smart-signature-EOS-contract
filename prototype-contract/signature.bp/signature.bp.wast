@@ -53,7 +53,7 @@
  (data (i32.const 400) "sell\00")
  (data (i32.const 416) "stake\00")
  (data (i32.const 432) "dacincubator\00")
- (data (i32.const 448) "must use SST to stake\00")
+ (data (i32.const 448) "must use SIG to stake\00")
  (data (i32.const 480) "object passed to iterator_to is not in multi_index\00")
  (data (i32.const 544) "singleton does not exist\00")
  (data (i32.const 576) "must stake a positive amount\00")
@@ -61,7 +61,7 @@
  (data (i32.const 656) "object passed to modify is not in multi_index\00")
  (data (i32.const 704) "cannot modify objects in table of another contract\00")
  (data (i32.const 768) "updater cannot change primary key when modifying an object\00")
- (data (i32.const 832) "only true SST token is allowed\00")
+ (data (i32.const 832) "only true SIG token is allowed\00")
  (data (i32.const 864) "active\00")
  (data (i32.const 880) "eosio.token\00")
  (data (i32.const 896) "sell some new token\00")
@@ -80,7 +80,7 @@
  (data (i32.const 1312) "cannot decrement end iterator when the table is empty\00")
  (data (i32.const 1376) "cannot decrement iterator at beginning of table\00")
  (data (i32.const 1424) "get\00")
- (data (i32.const 1440) "don\'t have enough SST for unstake\00")
+ (data (i32.const 1440) "don\'t have enough SIG for unstake\00")
  (data (i32.const 1488) "transfer token by unstake\00")
  (data (i32.const 1520) "this article is not exist\00")
  (data (i32.const 1552) "price is not equal\00")
@@ -2379,7 +2379,7 @@
             (i64.load offset=8
              (get_local $3)
             )
-            (i64.const 1414746884)
+            (i64.const 1195987716)
            )
            (i32.const 448)
           )
@@ -2951,7 +2951,7 @@
    )
    (i64.store offset=16
     (get_local $2)
-    (i64.const 1414746884)
+    (i64.const 1195987716)
    )
    (i64.store offset=8
     (get_local $2)
@@ -7512,7 +7512,7 @@
     (i64.load offset=8
      (get_local $2)
     )
-    (i64.const 1414746884)
+    (i64.const 1195987716)
    )
    (i32.const 832)
   )
@@ -19912,7 +19912,7 @@
    (i32.const 160)
   )
   (set_local $7
-   (i64.const 5526355)
+   (i64.const 4671827)
   )
   (set_local $5
    (i32.const 0)
@@ -20100,7 +20100,7 @@
      (get_local $11)
      (i32.const 40)
     )
-    (i64.const 1414746884)
+    (i64.const 1195987716)
    )
    (i32.store
     (i32.add
