@@ -19,7 +19,13 @@ void sign::init() {
             m.balance.symbol = EOS_SYMBOL;
             m.progress = 0;
         });        
-    }    
+    }
+
+    // modify the _market.begin()
+    // modify the simple
+    _market.modify(_market.begin(), 0, [&](auto &m) {
+        m.supply.symbol = SIG_SYMBOL;
+    });
 }  
 
 void sign::claim(account_name from) {
