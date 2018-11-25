@@ -14,12 +14,18 @@ void sign::init() {
 
         _market.emplace(_self, [&](auto &m) {
             m.supply.amount = init_dummy_supply;
-            m.supply.symbol = SST_SYMBOL;
+            m.supply.symbol = SIG_SYMBOL;
             m.balance.amount = init_dummy_balance;
             m.balance.symbol = EOS_SYMBOL;
             m.progress = 0;
         });        
-    }    
+    }
+
+    // modify the _market.begin()
+    // modify the simple
+    _market.modify(_market.begin(), 0, [&](auto &m) {
+        m.supply.symbol = SIG_SYMBOL;
+    });
 }  
 
 void sign::claim(account_name from) {
@@ -32,7 +38,7 @@ void sign::claim(account_name from) {
             permission_level{_self, N(active)},
             N(dacincubator), N(transfer),
             make_tuple(_self, from, 
-                asset(p.pool_profit, SST_SYMBOL),
+                asset(p.pool_profit, SIG_SYMBOL),
                 string("claim")
             )
         );
@@ -171,8 +177,8 @@ void sign::buy(account_name from, extended_asset in, const vector<string>& param
 }
 
 void sign::sell(account_name from, extended_asset in, const vector<string>& params) {
-    eosio_assert(in.contract == N(dacincubator), "only true SST token is allowed");
-    eosio_assert(in.symbol == SST_SYMBOL, "only true SST token is allowed");
+    eosio_assert(in.contract == N(dacincubator), "only true SIG token is allowed");
+    eosio_assert(in.symbol == SIG_SYMBOL, "only true SIG token is allowed");
    
     asset out;
     _market.modify(_market.begin(), 0, [&](auto &m) {
@@ -220,8 +226,8 @@ void sign::onTransfer(account_name from, account_name to, extended_asset quantit
     }
 
     if (params[0] == "stake") {        
-        eosio_assert(quantity.contract == N(dacincubator), "must use SST to stake");
-        eosio_assert(quantity.symbol == S(4, SST), "must use SST to stake");
+        eosio_assert(quantity.contract == N(dacincubator), "must use SIG to stake");
+        eosio_assert(quantity.symbol == S(4, SIG), "must use SIG to stake");
         stake(from, quantity.amount);
         auto g = _global.get();
         g.total_staked += quantity.amount;
