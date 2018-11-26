@@ -1,4 +1,4 @@
-#ifndef _DFF_CONFIG_HPP
+#ifndef _CONFIG_HPP
 
 #define EOS_SYMBOL S(4, EOS)
 #define SIG_SYMBOL S(4, SIG)

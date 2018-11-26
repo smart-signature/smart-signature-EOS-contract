@@ -3,9 +3,8 @@
  *  @copyright Andoromeda
  */
 #pragma once
-#include <eosiolib/asset.hpp>
-#include <eosiolib/currency.hpp>
 #include <eosiolib/eosio.hpp>
+#include <eosiolib/asset.hpp>
 #include <eosiolib/singleton.hpp>
 #include <eosiolib/transaction.hpp>
 
@@ -29,7 +28,7 @@ using eosio::permission_level;
 using eosio::action;
 using eosio::extended_asset;
 using eosio::unpack_action_data;
-using eosio::currency;
+
 
 class sign : public council {
     public: sign(account_name self) :
