@@ -1,2 +1,2 @@
 # Introduction
-Yet Another Prototype Contract
+Yet Another Contract
