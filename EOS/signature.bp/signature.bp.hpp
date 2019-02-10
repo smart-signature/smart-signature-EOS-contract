@@ -8,12 +8,10 @@
 #include <eosiolib/singleton.hpp>
 #include <eosiolib/transaction.hpp>
 
+#include "config.hpp"
 #include "council.hpp"
 #include "NFT.hpp"
 // #include <cmath>
-// #include <string>
-
-#include "config.hpp"
 #include "utils.hpp"
 #include "kyubey.hpp"
 // #include "eosio.token.hpp"
@@ -30,45 +28,15 @@ using eosio::extended_asset;
 using eosio::unpack_action_data;
 
 
-class sign : public council {
-    public: sign(account_name self) :
+CONTRACT sign : public council {
+    public: 
+        sign( name receiver, name code, datastream<const char*> ds ) :
         council(self),
         _global(_self, _self),
         _market(_self, _self),
         _sign(_self, _self){}
 
-    // @abi action
-    void init();
-    // @abi action
-    void clear();     
-    // @abi action
-    void test();
-    // @abi action
-    void unstake(account_name from, uint64_t amount);
-    // @abi action
-    void claim(account_name from);    
-
-    // @abi action
-    void transfer(account_name   from,
-                  account_name   to,
-                  asset          quantity,
-                  string         memo);
-    
-    void onTransfer(account_name from, account_name to,
-                    extended_asset quantity, string memo); 
-
-    void create(account_name from, extended_asset in, const vector<string>& params);
-    void sponsor(account_name from, extended_asset in, const vector<string>& params);    
-    void buy(account_name from, extended_asset in, const vector<string>& params);
-    void sell(account_name from, extended_asset in, const vector<string>& params);
-
-    // @abi action
-    void airdrop(account_name to, uint64_t amount);
-
-    void apply(account_name code, action_name action);
-
-    // @abi table signs
-    struct sign_info {
+    struct [[eosio::table("signs")]] sign_info {
         uint64_t id;
         account_name creator = 0;
         account_name owner = 0;
@@ -87,16 +55,14 @@ class sign : public council {
         }
     };    
     
-    // @abi table players
-    struct player_info {
+    struct [[eosio::table("players")]] player_info {
         int64_t ref_income;
         int64_t staked_income;
         int64_t article_income;
         int64_t sponsor_income;
     };
         
-    // @abi table global
-    struct global_info {
+    struct [[eosio::table("global")]] global_info {
         uint64_t defer_id;
         uint64_t total_staked;
         uint64_t global_fee;
@@ -115,10 +81,27 @@ class sign : public council {
 
     typedef singleton<N(players), player_info> singleton_players;  
     
-    // @abi action
-    void receipt(const rec_reveal& reveal) {
+    // Contract management
+    ACTION init();
+    ACTION clear();     
+    
+    ACTION unstake(account_name from, uint64_t amount);
+    ACTION claim(account_name from);    
+
+    ACTION airdrop(account_name to, uint64_t amount);
+
+    ACTION transfer(account_name   from,
+                  account_name   to,
+                  asset          quantity,
+                  string         memo);
+
+    ACTION test();
+
+    ACTION receipt(const rec_reveal& reveal) {
         require_auth(_self);
     }
+
+    void apply(uint64_t receiver, uint64_t code, uint64_t action);
 
     uint64_t get_next_defer_id() {
         auto g = _global.get();    
@@ -133,36 +116,39 @@ class sign : public council {
         trx.actions.emplace_back(std::forward<Args>(args)...);
         trx.send(get_next_defer_id(), _self, false);
     }
+
+private:
+    void onTransfer(account_name from, account_name to,
+                    extended_asset quantity, string memo); 
+
+    void create(account_name from, extended_asset in, const vector<string>& params);
+    void sponsor(account_name from, extended_asset in, const vector<string>& params);    
+    void buy(account_name from, extended_asset in, const vector<string>& params);
+    void sell(account_name from, extended_asset in, const vector<string>& params);
+
 };
 
 
-struct st_transfer {
-    account_name from;
-    account_name to;
-    asset        quantity;
-    string       memo;
-};
-
-void sign::apply(account_name code, action_name action) {   
+void sign::apply(uint64_t receiver, uint64_t code, uint64_t action) {   
     auto &thiscontract = *this;
-
-    if (action == N(transfer)) {
+    if (action == ( "transfer"_n ).value) {
         auto transfer_data = unpack_action_data<st_transfer>();
         onTransfer(transfer_data.from, transfer_data.to, extended_asset(transfer_data.quantity, code), transfer_data.memo);               
         return;
     }
 
-    if (code != _self) return;
+    if (code != get_self().value) return;
     switch (action) {
-        EOSIO_API(sign, (init));
-    };
+        EOSIO_DISPATCH_HELPER(sign,
+                              (init))
+    }
 }
 
-extern "C" {
+extern "C" { // renew done
     [[noreturn]] void apply(uint64_t receiver, uint64_t code, uint64_t action) 
     {
-        sign p(receiver);
-        p.apply(code, action);
+        sign p( name(receiver), name(code), datastream<const char*>(nullptr, 0) );
+        p.apply(receiver, code, action);
         eosio_exit(0);
     }
 }

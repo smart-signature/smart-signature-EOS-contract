@@ -11,7 +11,6 @@
 
 #include <eosiolib/eosio.hpp>
 #include <eosiolib/asset.hpp>
-#include <eosiolib/contract.hpp>
 #include <eosiolib/transaction.hpp>
 
 #include <cmath>
@@ -26,6 +25,8 @@ using eosio::action;
 using eosio::permission_level;
 
 const uint64_t K = 10000000000;
+
+using namespace eosio ;
 
 namespace kyubey {
 
@@ -66,7 +67,6 @@ namespace kyubey {
         }
     }*/
 
-    // @abi table market i64
     struct market {
         uint64_t id = 0;        
         asset supply;

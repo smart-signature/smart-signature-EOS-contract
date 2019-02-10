@@ -26,6 +26,8 @@ const auto TOKEN_CONTRACT = SST_CONTRACT ;
 
 constexpr uint64_t PRICE_SCALE = 100000000;
 
+// static constexpr time refund_delay = 3*24*3600;
+
 } // namespace config
 
 #endif

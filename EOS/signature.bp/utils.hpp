@@ -1,9 +1,19 @@
 #pragma once
+#include <eosiolib/eosio.hpp>
 #include <string>
 #include <vector>
 
 using namespace eosio;
 using namespace std;
+
+struct st_transfer {
+    name from;
+    name to;
+    asset        quantity;
+    string       memo;
+
+    EOSLIB_SERIALIZE( st_transfer, (from)(to)(quantity)(memo) )
+};
 
 struct account {
     asset    balance;
