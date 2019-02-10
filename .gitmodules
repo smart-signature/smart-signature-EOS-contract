@@ -1,0 +1,3 @@
+[submodule "EOS/signature.bp/model"]
+	path = EOS/signature.bp/model
+	url = https://github.com/Dapp-rosetta/dapp-rosetta-contract.git
