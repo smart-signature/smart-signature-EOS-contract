@@ -3,3 +3,6 @@
 新來的 contributor ，請開個人 branch 維護，ex: xxx/xxxx
 
 流程圖預計用md做一份
+
+測試歡迎使用
+https://github.com/yukiexe/eos_contract_test
