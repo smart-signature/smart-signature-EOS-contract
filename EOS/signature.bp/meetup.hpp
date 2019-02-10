@@ -8,11 +8,7 @@
 #include <eosiolib/singleton.hpp>
 #include <eosiolib/transaction.hpp>
  
-#define TOKEN_CONTRACT N(dacincubator)
-#define TOKEN_SYMBOL S(4, PLT)
-
 typedef double real_type;
-typedef uint8_t card ;
 
 using std::string;
 using eosio::symbol_name;

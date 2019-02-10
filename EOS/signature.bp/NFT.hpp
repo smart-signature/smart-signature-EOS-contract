@@ -9,7 +9,6 @@
 #include <eosiolib/transaction.hpp>
  
 typedef double real_type;
-typedef uint8_t card ;
 
 using std::string;
 using eosio::symbol_name;

@@ -9,7 +9,6 @@
 #include <eosiolib/transaction.hpp>
 #include "config.hpp"
 
-
 typedef double real_type;
 
 using std::string;
@@ -24,20 +23,19 @@ using eosio::action;
 // 还没有办法让council, proxy退出。
 // 还没实现72小时后取token。
 
-
 class council : public eosio::contract {
-    public: council(account_name self) :
+    public: council(name self) :
         contract(self){}
 
     // @abi table voters
     struct voter_info {
-        account_name to = 0;
+        name to = 0;
         uint64_t     staked = 0;
     };       
 
     // @abi table proxies
     struct proxy_info {
-        account_name to = 0;
+        name to = 0;
         uint64_t delegated_staked = 0;
     };
 
@@ -54,7 +52,7 @@ class council : public eosio::contract {
   //  singleton_proxies _proxies;
    // singleton_council _council;
     
-    void stake(account_name from, uint64_t delta) {
+    void stake(name from, uint64_t delta) {
         require_auth(from);
         eosio_assert(delta > 0, "must stake a positive amount");
         singleton_voters _voters(_self, from);
@@ -63,7 +61,7 @@ class council : public eosio::contract {
         _voters.set(v, _self);
     }
     
-    void unstake(account_name from, uint64_t amount) {
+    void unstake(name from, uint64_t amount) {
         require_auth(from);
         singleton_voters _voters(_self, from);
         auto v = _voters.get_or_create(_self, voter_info{});
@@ -119,7 +117,7 @@ class council : public eosio::contract {
         
     }*/
 
-    void unvote(account_name from) {
+    void unvote(name from) {
         /*
         require_auth(from);        
         auto v = _voters.find(from);
@@ -171,7 +169,7 @@ class council : public eosio::contract {
     }    
     */
         /*   
-    void vote(account_name from, account_name to) {   
+    void vote(name from, name to) {   
   
         require_auth(from);
         auto v = _voters.find(from);
@@ -194,7 +192,7 @@ class council : public eosio::contract {
     }*/
 
     // 申明自己参与代理
-    void runproxy(account_name from) {
+    void runproxy(name from) {
         /*
         require_auth(from);
 
@@ -214,7 +212,7 @@ class council : public eosio::contract {
     }    
 
     // 申明自己参与委员会
-    void runcouncil(account_name from) {
+    void runcouncil(name from) {
         require_auth(from);
 
         // warning!!!
@@ -235,7 +233,7 @@ class council : public eosio::contract {
     }
 
     // unstake 72小时后可以取回token
-    void getToken(account_name from) {
+    void getToken(name from) {
         /*
         require_auth(from);        
         auto itr = _voters.find(from);

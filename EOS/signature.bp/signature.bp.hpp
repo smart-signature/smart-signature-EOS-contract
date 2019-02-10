@@ -7,26 +7,19 @@
 #include <eosiolib/asset.hpp>
 #include <eosiolib/singleton.hpp>
 #include <eosiolib/transaction.hpp>
+// #include <cmath>
 
 #include "config.hpp"
+#include "utils.hpp"
 #include "council.hpp"
 #include "NFT.hpp"
-// #include <cmath>
-#include "utils.hpp"
 #include "kyubey.hpp"
-// #include "eosio.token.hpp"
  
 typedef double real_type;
 
-using std::string;
-using eosio::symbol_name;
-using eosio::asset;
-using eosio::symbol_type;
-using eosio::permission_level;
-using eosio::action;
-using eosio::extended_asset;
-using eosio::unpack_action_data;
-
+using namespace eosio ;
+using namespace config ;
+using namespace kyubeytool ;
 
 CONTRACT sign : public council {
     public: 
