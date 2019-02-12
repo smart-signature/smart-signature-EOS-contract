@@ -7,13 +7,12 @@
 #include <eosiolib/asset.hpp>
 #include <eosiolib/singleton.hpp>
 #include <eosiolib/transaction.hpp>
-// #include <cmath>
 
 #include "config.hpp"
 #include "model/Contract/EOS/util/util.hpp"
 #include "council.hpp"
-#include "NFT.hpp"
 #include "kyubey.hpp"
+#include "NFT.hpp"
  
 typedef double real_type;
 
@@ -21,10 +20,10 @@ using namespace eosio ;
 using namespace config ;
 using namespace kyubeytool ;
 
-CONTRACT sign : public council {
+CONTRACT sign : public eosio::contract {
     public: 
         sign( name receiver, name code, datastream<const char*> ds ) :
-        council(self),
+        /*council(self),*/
         _global(_self, _self),
         _market(_self, _self),
         _sign(_self, _self){}
@@ -63,16 +62,10 @@ CONTRACT sign : public council {
         time st, ed;
     };
 
-    typedef eosio::multi_index<N(signs), sign_info> sign_index;
-    sign_index _sign;
-
-    typedef eosio::multi_index<N(market), kyubey::market> market_index;
-    market_index _market;    
-
-    typedef singleton<N(global), global_info> singleton_global;
-    singleton_global _global;     
-
-    typedef singleton<N(players), player_info> singleton_players;  
+    typedef singleton<"global"_n, global_info> singleton_global_t;
+    typedef eosio::multi_index<"signs"_n, sign_info> sign_index_t;
+    typedef eosio::multi_index<"market"_n, kyubey::market> market_index_t;
+    typedef singleton<"players"_n, player_info> singleton_players_t;  
     
     // Contract management
     ACTION init();
@@ -111,6 +104,10 @@ CONTRACT sign : public council {
     }
 
 private:
+    sign_index_t _sign;
+    market_index_t _market;    
+    singleton_global_t _global; 
+
     void onTransfer(name from, name to,
                     extended_asset quantity, string memo); 
 
@@ -125,7 +122,7 @@ private:
 void sign::apply(uint64_t receiver, uint64_t code, uint64_t action) {   
     auto &thiscontract = *this;
     if (action == ( "transfer"_n ).value) {
-        auto transfer_data = unpack_action_data<st_transfer>();
+        auto transfer_data = unpack_action_data<kyubeyutil::st_transfer>();
         onTransfer(transfer_data.from, transfer_data.to, extended_asset(transfer_data.quantity, code), transfer_data.memo);               
         return;
     }
