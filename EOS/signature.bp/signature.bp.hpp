@@ -32,7 +32,7 @@ CONTRACT sign : public eosio::contract {
         name owner = 0;
         uint64_t creator_fee;
         uint64_t ref_fee;
-        uint64_t k;        
+        uint64_t k;
         uint64_t price;
         uint64_t last_anti_bot_fee = 0;
         uint64_t anti_bot_init_fee;
@@ -87,6 +87,8 @@ CONTRACT sign : public eosio::contract {
     }
 
     // new
+    // 跟 "一个正常发布内容的用户操作流程" 不一致
+    // 晚點出新的版本修正
     ACTION signcreate( name owner ) {
         require_auth(_self);
         
