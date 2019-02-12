@@ -1,7 +1,6 @@
 #ifndef _CONFIG_HPP
 
 #include <eosiolib/asset.hpp>
-#include "utils.hpp"
 
 namespace config {
 

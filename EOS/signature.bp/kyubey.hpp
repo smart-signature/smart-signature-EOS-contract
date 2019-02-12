@@ -4,20 +4,13 @@
  *  Want to make a Contract with me?
  *  I am the linear version of kyubey protocol.
  */
-
 // dacincubator
-
 #pragma once
-
 #include <eosiolib/eosio.hpp>
 #include <eosiolib/asset.hpp>
 #include <eosiolib/transaction.hpp>
 
 #include <cmath>
-
-#define EOS_SYMBOL S(4, EOS)
-
-typedef double real_type;
 
 using eosio::asset;
 using eosio::symbol_type;
@@ -31,7 +24,7 @@ using namespace eosio ;
 namespace kyubey {
 
     /*
-    void buy(account_name account, asset in) {    
+    void buy(name account, asset in) {    
         asset out;
         _market.modify(_market.begin(), 0, [&](auto &m) {
             out = m.buy(in.amount);
@@ -51,7 +44,7 @@ namespace kyubey {
         }        
     }
 
-    void sell(account_name account, asset in) {            
+    void sell(name account, asset in) {            
         //sub_balance(account, in);          
         asset out;
         _market.modify(_market.begin(), 0, [&](auto &m) {

@@ -10,7 +10,7 @@
 // #include <cmath>
 
 #include "config.hpp"
-#include "utils.hpp"
+#include "model/Contract/EOS/util/util.hpp"
 #include "council.hpp"
 #include "NFT.hpp"
 #include "kyubey.hpp"
@@ -31,8 +31,8 @@ CONTRACT sign : public council {
 
     struct [[eosio::table("signs")]] sign_info {
         uint64_t id;
-        account_name creator = 0;
-        account_name owner = 0;
+        name creator = 0;
+        name owner = 0;
         uint64_t creator_fee;
         uint64_t ref_fee;
         uint64_t k;        
@@ -59,7 +59,7 @@ CONTRACT sign : public council {
         uint64_t defer_id;
         uint64_t total_staked;
         uint64_t global_fee;
-        account_name last;
+        name last;
         time st, ed;
     };
 
@@ -78,13 +78,13 @@ CONTRACT sign : public council {
     ACTION init();
     ACTION clear();     
     
-    ACTION unstake(account_name from, uint64_t amount);
-    ACTION claim(account_name from);    
+    ACTION unstake(name from, uint64_t amount);
+    ACTION claim(name from);    
 
-    ACTION airdrop(account_name to, uint64_t amount);
+    ACTION airdrop(name to, uint64_t amount);
 
-    ACTION transfer(account_name   from,
-                  account_name   to,
+    ACTION transfer(name   from,
+                  name   to,
                   asset          quantity,
                   string         memo);
 
@@ -111,13 +111,13 @@ CONTRACT sign : public council {
     }
 
 private:
-    void onTransfer(account_name from, account_name to,
+    void onTransfer(name from, name to,
                     extended_asset quantity, string memo); 
 
-    void create(account_name from, extended_asset in, const vector<string>& params);
-    void sponsor(account_name from, extended_asset in, const vector<string>& params);    
-    void buy(account_name from, extended_asset in, const vector<string>& params);
-    void sell(account_name from, extended_asset in, const vector<string>& params);
+    void create(name from, extended_asset in, const vector<string>& params);
+    void sponsor(name from, extended_asset in, const vector<string>& params);    
+    void buy(name from, extended_asset in, const vector<string>& params);
+    void sell(name from, extended_asset in, const vector<string>& params);
 
 };
 

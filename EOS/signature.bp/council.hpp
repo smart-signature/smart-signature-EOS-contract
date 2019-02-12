@@ -7,9 +7,7 @@
 #include <eosiolib/asset.hpp>
 #include <eosiolib/singleton.hpp>
 #include <eosiolib/transaction.hpp>
-#include "config.hpp"
 
-typedef double real_type;
 
 using std::string;
 using eosio::symbol_name;

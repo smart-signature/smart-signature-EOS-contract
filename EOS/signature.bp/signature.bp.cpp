@@ -22,7 +22,7 @@ void sign::init() {
     }    
 }  
 
-void sign::claim(account_name from) {
+void sign::claim(name from) {
     require_auth(from);
     singleton_players _players(_self, from);
     auto p = _players.get_or_create(_self, player_info{});
@@ -41,7 +41,7 @@ void sign::claim(account_name from) {
     _players.set(p, _self); */   
 }
 
-void sign::unstake(account_name from, uint64_t amount) {
+void sign::unstake(name from, uint64_t amount) {
     require_auth(from);
     council::unstake(from, amount);
     auto g = _global.get();
@@ -49,7 +49,7 @@ void sign::unstake(account_name from, uint64_t amount) {
     _global.set(g, _self);             
 }
 
-void sign::airdrop(account_name to, uint64_t amount) {
+void sign::airdrop(name to, uint64_t amount) {
     require_auth(_self);
 
     singleton_players _players(_self, to);
@@ -58,7 +58,7 @@ void sign::airdrop(account_name to, uint64_t amount) {
     _players.set(p, _self);
 }
 
-void sign::create(account_name from, extended_asset in, const vector<string>& params) {
+void sign::create(name from, extended_asset in, const vector<string>& params) {
     require_auth(from);
     eosio_assert(in.contract == N(eosio.token), "only true EOS token is allowed");
     eosio_assert(in.symbol == EOS_SYMBOL, "only true EOS token is allowed");    
@@ -95,7 +95,7 @@ void sign::create(account_name from, extended_asset in, const vector<string>& pa
     });
 }
 
-void sign::sponsor(account_name from, extended_asset in, const vector<string>& params) {
+void sign::sponsor(name from, extended_asset in, const vector<string>& params) {
     require_auth(from);
 
     eosio_assert(in.contract == N(eosio.token), "only true EOS token is allowed");
@@ -151,7 +151,7 @@ void sign::sponsor(account_name from, extended_asset in, const vector<string>& p
     _creator.set(c, _self);
 }
 
-void sign::buy(account_name from, extended_asset in, const vector<string>& params) {
+void sign::buy(name from, extended_asset in, const vector<string>& params) {
 
     eosio_assert(in.contract == N(eosio.token), "only true EOS token is allowed");
     eosio_assert(in.symbol == EOS_SYMBOL, "only true EOS token is allowed.");
@@ -170,7 +170,7 @@ void sign::buy(account_name from, extended_asset in, const vector<string>& param
     }    
 }
 
-void sign::sell(account_name from, extended_asset in, const vector<string>& params) {
+void sign::sell(name from, extended_asset in, const vector<string>& params) {
     eosio_assert(in.contract == N(dacincubator), "only true SST token is allowed");
     eosio_assert(in.symbol == SST_SYMBOL, "only true SST token is allowed");
    
@@ -188,7 +188,7 @@ void sign::sell(account_name from, extended_asset in, const vector<string>& para
     }
 }
 
-void sign::onTransfer(account_name from, account_name to, extended_asset quantity, string memo){
+void sign::onTransfer(name from, name to, extended_asset quantity, string memo){
     if (to != _self) return;
     require_auth(from);
 
