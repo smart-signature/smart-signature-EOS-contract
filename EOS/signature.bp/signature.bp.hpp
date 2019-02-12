@@ -13,8 +13,6 @@
 #include "council.hpp"
 #include "kyubey.hpp"
 #include "NFT.hpp"
- 
-typedef double real_type;
 
 using namespace eosio ;
 using namespace config ;
@@ -26,7 +24,7 @@ CONTRACT sign : public eosio::contract {
         /*council(self),*/
         _global(_self, _self),
         _market(_self, _self),
-        _sign(_self, _self){}
+        _signs(_self, _self){}
 
     struct [[eosio::table("signs")]] sign_info {
         uint64_t id;
@@ -48,13 +46,14 @@ CONTRACT sign : public eosio::contract {
     };    
     
     struct [[eosio::table("players")]] player_info {
-        int64_t ref_income;
-        int64_t staked_income;
-        int64_t article_income;
-        int64_t sponsor_income;
+        vector<uint64_t> signs;
+        asset ref_income;
+        asset staked_income;
+        asset article_income;
+        asset sponsor_income;       
     };
         
-    struct [[eosio::table("global")]] global_info {
+    struct [[eosio::table("global")]] st_global {
         uint64_t defer_id;
         uint64_t total_staked;
         uint64_t global_fee;
@@ -62,7 +61,7 @@ CONTRACT sign : public eosio::contract {
         time st, ed;
     };
 
-    typedef singleton<"global"_n, global_info> singleton_global_t;
+    typedef singleton<"global"_n, st_global> singleton_global_t;
     typedef eosio::multi_index<"signs"_n, sign_info> sign_index_t;
     typedef eosio::multi_index<"market"_n, kyubey::market> market_index_t;
     typedef singleton<"players"_n, player_info> singleton_players_t;  
@@ -87,8 +86,38 @@ CONTRACT sign : public eosio::contract {
         require_auth(_self);
     }
 
+    // new
+    ACTION signcreate( name owner ) {
+        require_auth(_self);
+        
+        //two-way binding.
+        auto itr_p = _players.require_find( owner, "Unable to find player" );
+        auto itr_newsign = _signs.emplace( _self, [&](auto &s) {
+            s.id = _signs.available_primary_key();
+            // s.creator
+            s.owner = owner;
+
+            /*
+            uint64_t creator_fee;
+            uint64_t ref_fee;
+            uint64_t k;        
+            uint64_t price;
+            uint64_t last_anti_bot_fee = 0;
+            uint64_t anti_bot_init_fee;
+            time anti_bot_timer;
+            time last_buy_timer;        
+            time st;
+            */
+        });
+
+        _players.modify(itr_p, _self, [&](auto &p) {
+            p.signs.push_back(itr_newsign->id);
+        });
+    }
+
     void apply(uint64_t receiver, uint64_t code, uint64_t action);
 
+    // defer_action
     uint64_t get_next_defer_id() {
         auto g = _global.get();    
         g.defer_id += 1;
@@ -104,9 +133,10 @@ CONTRACT sign : public eosio::contract {
     }
 
 private:
-    sign_index_t _sign;
-    market_index_t _market;    
     singleton_global_t _global; 
+    sign_index_t _signs;
+    market_index_t _market;    
+    
 
     void onTransfer(name from, name to,
                     extended_asset quantity, string memo); 
