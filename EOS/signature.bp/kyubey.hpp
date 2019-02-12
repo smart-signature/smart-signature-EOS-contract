@@ -12,17 +12,13 @@
 
 #include <cmath>
 
-using eosio::asset;
-using eosio::symbol_type;
-using eosio::action;
-using eosio::permission_level;
 
-const uint64_t K = 10000000000;
-
-using namespace eosio ;
 
 namespace kyubey {
 
+    using namespace eosio ;
+
+    constexpr uint64_t K = 10000000000;
     /*
     void buy(name account, asset in) {    
         asset out;
