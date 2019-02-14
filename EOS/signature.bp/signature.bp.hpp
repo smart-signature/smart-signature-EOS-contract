@@ -112,6 +112,22 @@ CONTRACT sign : public eosio::contract {
             p.signs.push_back(itr_newsign->id);
         });
     }
+    
+    ACTION signtransfer(name from, name to, uint64_t id, string memo) {
+        auto itr = _signs.require_find( id, "Unable to find sign" );
+        itr->transfer<sign_index_t>( _self, _self, from, to, *itr, memo );
+
+        singleton_players_t players_from( _self, from.value );
+        auto p_from = players_from.get() ;
+        p_from.signs.push_back(id);
+        players_from.set( p_from, _self) ;
+
+        singleton_players_t players_to( _self, to.value );
+        auto p_to = players_to.get() ;
+        
+        p_to.signs.erase( std::find(p_to.signs.begin(), p_to.signs.end(), id) );
+        players_to.set( p_to, _self) ;
+    }
 
     void apply(uint64_t receiver, uint64_t code, uint64_t action);
 
