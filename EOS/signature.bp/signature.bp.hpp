@@ -10,9 +10,9 @@
 
 #include "config.hpp"
 #include "model/Contract/EOS/util/util.hpp"
+#include "model/Contract/EOS/nft/nft.hpp"
 #include "council.hpp"
 #include "kyubey.hpp"
-#include "NFT.hpp"
 
 using namespace eosio ;
 using namespace config ;
@@ -26,20 +26,16 @@ CONTRACT sign : public eosio::contract {
         _market(_self, _self),
         _signs(_self, _self){}
 
-    struct [[eosio::table("signs")]] sign_info {
-        uint64_t id;
+    struct [[eosio::table("signs")]] sign_info : nft::st_nft {
         name creator = 0;
-        name owner = 0;
         uint64_t creator_fee;
         uint64_t ref_fee;
         uint64_t k;
-        uint64_t price;
         uint64_t last_anti_bot_fee = 0;
         uint64_t anti_bot_init_fee;
         time anti_bot_timer;
         time last_buy_timer;        
         time st;
-        uint64_t primary_key()const { return id; }
         uint64_t next_price() const {
             return price * k / 1000;
         }
@@ -159,8 +155,8 @@ void sign::apply(uint64_t receiver, uint64_t code, uint64_t action) {
         return;
     }
 
-    if (code != get_self().value) return;
-    switch (action) {
+    if (code != _self.value) return;
+    switch (action) { // still need fix
         EOSIO_DISPATCH_HELPER(sign,
                               (init))
     }
