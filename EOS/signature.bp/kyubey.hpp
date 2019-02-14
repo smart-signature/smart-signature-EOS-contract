@@ -50,7 +50,7 @@ namespace kyubey {
         if (out.amount > 0){
             action(
                 permission_level{_self, N(active)},
-                N(eosio.token), N(transfer),
+                "eosio.token"_n, N(transfer),
                 make_tuple(_self, account, out, std::string(""))
             ).send();
         }
@@ -71,7 +71,7 @@ namespace kyubey {
             eosio_assert(new_progress <= 10000, "out of range");                                
             progress = new_progress;
         }
-
+        /*
         asset buy(uint64_t in) {
             // in -= fee(in);
             balance.amount += in;
@@ -92,5 +92,6 @@ namespace kyubey {
             // delta_balance -= fee(delta_balance);
             return asset(delta_balance, balance.symbol);
         }
+        */
     };
 };

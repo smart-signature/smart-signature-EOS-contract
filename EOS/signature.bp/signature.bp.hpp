@@ -11,23 +11,28 @@
 #include "config.hpp"
 #include "model/Contract/EOS/util/util.hpp"
 #include "model/Contract/EOS/nft/nft.hpp"
-#include "council.hpp"
+// include "council.hpp"
 #include "kyubey.hpp"
 
+
+using std::string;
+using std::vector;
 using namespace eosio ;
+using namespace kyubeyutil ;
 using namespace config ;
-using namespace kyubeytool ;
+
+typedef uint64_t time ;
 
 CONTRACT sign : public eosio::contract {
-    public: 
+    public:
         sign( name receiver, name code, datastream<const char*> ds ) :
-        /*council(self),*/
-        _global(_self, _self),
-        _market(_self, _self),
-        _signs(_self, _self){}
+        contract( receiver, code, ds ),
+        _global(receiver, receiver.value),
+        /*_market(receiver, receiver.value),*/
+        _signs(receiver, receiver.value){}
 
     struct [[eosio::table("signs")]] sign_info : nft::st_nft {
-        name creator = 0;
+        name creator ;
         uint64_t creator_fee;
         uint64_t ref_fee;
         uint64_t k;
@@ -59,15 +64,12 @@ CONTRACT sign : public eosio::contract {
 
     typedef singleton<"global"_n, st_global> singleton_global_t;
     typedef eosio::multi_index<"signs"_n, sign_info> sign_index_t;
-    typedef eosio::multi_index<"market"_n, kyubey::market> market_index_t;
+    // typedef eosio::multi_index<"market"_n, kyubey::market> market_index_t;
     typedef singleton<"players"_n, player_info> singleton_players_t;  
     
     // Contract management
     ACTION init();
     ACTION clear();     
-    
-    ACTION unstake(name from, uint64_t amount);
-    ACTION claim(name from);    
 
     ACTION airdrop(name to, uint64_t amount);
 
@@ -78,9 +80,11 @@ CONTRACT sign : public eosio::contract {
 
     ACTION test();
 
+    /*
     ACTION receipt(const rec_reveal& reveal) {
         require_auth(_self);
     }
+    */
 
     // new
     // 跟 "一个正常发布内容的用户操作流程" 不一致
@@ -89,7 +93,7 @@ CONTRACT sign : public eosio::contract {
         require_auth(_self);
         
         //two-way binding.
-        auto itr_p = _players.require_find( owner, "Unable to find player" );
+        // auto itr_p = _players.require_find( owner, "Unable to find player" );
         auto itr_newsign = _signs.emplace( _self, [&](auto &s) {
             s.id = _signs.available_primary_key();
             // s.creator
@@ -108,14 +112,16 @@ CONTRACT sign : public eosio::contract {
             */
         });
 
+        /*
         _players.modify(itr_p, _self, [&](auto &p) {
             p.signs.push_back(itr_newsign->id);
         });
+        */
     }
     
     ACTION signtransfer(name from, name to, uint64_t id, string memo) {
         auto itr = _signs.require_find( id, "Unable to find sign" );
-        itr->transfer<sign_index_t>( _self, _self, from, to, *itr, memo );
+        itr->transfer<sign_index_t>( _self, _self, from, to, memo );
 
         singleton_players_t players_from( _self, from.value );
         auto p_from = players_from.get() ;
@@ -149,11 +155,11 @@ CONTRACT sign : public eosio::contract {
 private:
     singleton_global_t _global; 
     sign_index_t _signs;
-    market_index_t _market;    
+    // market_index_t _market;    
     
 
     void onTransfer(name from, name to,
-                    extended_asset quantity, string memo); 
+                    asset quantity, string memo); 
 
     void create(name from, extended_asset in, const vector<string>& params);
     void sponsor(name from, extended_asset in, const vector<string>& params);    
@@ -167,7 +173,7 @@ void sign::apply(uint64_t receiver, uint64_t code, uint64_t action) {
     auto &thiscontract = *this;
     if (action == ( "transfer"_n ).value) {
         auto transfer_data = unpack_action_data<kyubeyutil::st_transfer>();
-        onTransfer(transfer_data.from, transfer_data.to, extended_asset(transfer_data.quantity, code), transfer_data.memo);               
+        onTransfer(transfer_data.from, transfer_data.to, transfer_data.quantity, transfer_data.memo);               
         return;
     }
 
