@@ -120,8 +120,7 @@ CONTRACT sign : public eosio::contract {
     }
     
     ACTION signtransfer(name from, name to, uint64_t id, string memo) {
-        auto itr = _signs.require_find( id, "Unable to find sign" );
-        nft::transfer<sign_index_t, decltype(*itr)>( {_self, _self.value}, from, to, *itr, memo );
+        nft::transfer<sign_index_t>( {_self,_self.value}, from, to, id, memo );
 
         singleton_players_t players_from( _self, from.value );
         auto p_from = players_from.get() ;
