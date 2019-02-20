@@ -18,6 +18,10 @@ using eosio::action;
 
 namespace NFT {
     
+    using std::string;
+    using std::vector;
+    using namespace eosio;
+
     void create(name from) {
     }
 

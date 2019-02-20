@@ -175,7 +175,7 @@ void sign::onTransfer(name from, name to, asset quantity, string memo){
 
     eosio_assert(quantity.is_valid(), "Invalid token transfer");
     eosio_assert(quantity.amount > 0, "must buy a positive amount");
-    auto params = split(memo, ' ');
+    auto params = kyubeyutil::split(memo, ' ');
     eosio_assert(params.size() >= 1, "error memo");
 
     if (params[0] == "sponsor") {

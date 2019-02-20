@@ -9,10 +9,8 @@
 #include <eosiolib/transaction.hpp>
 
 #include "config.hpp"
-#include "utils.hpp"
-#include "NFT.hpp"
-// include "council.hpp"
-#include "kyubey.hpp"
+#include "model/Contract/EOS/util/util.hpp"
+#include "NFT.hpp" // "model/Contract/EOS/nft/nft.hpp"
 
 using std::string;
 using std::vector;
@@ -24,9 +22,7 @@ typedef uint64_t time;
 CONTRACT sign : public eosio::contract
 {
   public:
-    sign(name receiver, name code, datastream<const char *> ds) : contract(receiver, code, ds)                                                                  
-    {
-    }
+    using contract::contract;
 
     struct [[eosio::table("players")]] player_info
     {
@@ -70,7 +66,7 @@ CONTRACT sign : public eosio::contract
         auto &thiscontract = *this;
         if (action == ("transfer"_n).value)
         {
-            auto transfer_data = unpack_action_data<st_transfer>();
+            auto transfer_data = unpack_action_data<kyubeyutil::st_transfer>();
             onTransfer(transfer_data.from, transfer_data.to, transfer_data.quantity, transfer_data.memo);
             return;
         }
