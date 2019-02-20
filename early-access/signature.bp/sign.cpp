@@ -30,6 +30,13 @@ void sign::claim(name from)
     _player.set(p, from);
 }
 
+/**
+    创建一个签名
+
+    @param from 作者
+    @param asset 门槛
+    @params params 裂变系数
+*/
 void sign::create(name from, asset in, const vector<string> &params)
 {
     require_auth(from);
@@ -47,7 +54,14 @@ void sign::create(name from, asset in, const vector<string> &params)
     });
 }
 
-void sign::sponsor(name from, asset in, const vector<string> &params)
+/**
+    创建一次分享
+
+    @param from 读者
+    @param in 赏金
+    @params params 签名 ID，上游分享 ID
+*/
+void sign::share(name from, asset in, const vector<string> &params)
 {
     require_auth(from);
     eosio_assert(in.amount >= 1000, "you need at least 0.1 EOS to sponsor a signature"); // 最小打赏 0.1 EOS
@@ -104,9 +118,9 @@ void sign::onTransfer(name from, name to, extended_asset in, string memo)
     auto params = split(memo, ' ');
     eosio_assert(params.size() >= 1, "error memo");    
 
-    if (params[0] == "sponsor")
+    if (params[0] == "share")
     {
-        sponsor(from, in.quantity, params);
+        share(from, in.quantity, params);
         return;
     }
 

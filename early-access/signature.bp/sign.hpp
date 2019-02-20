@@ -62,7 +62,7 @@ CONTRACT sign : public eosio::contract
                     extended_asset in, string memo); 
 
     void create(name from, asset in, const vector<string>& params);
-    void sponsor(name from, asset in, const vector<string>& params);
+    void share(name from, asset in, const vector<string>& params);
     
     void apply(uint64_t receiver, uint64_t code, uint64_t action)
     {
