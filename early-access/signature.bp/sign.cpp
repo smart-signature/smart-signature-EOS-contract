@@ -74,7 +74,7 @@ void sign::share(name from, asset in, const vector<string> &params)
             auto p = _player.get_or_create(_self, player_info{});
             p.share_income += delta;
             _player.set(p, _self);
-            in -= delta;
+            in.amount -= delta;
         }
     }
 
@@ -95,13 +95,13 @@ void sign::claim(name from)
     require_auth(from);
     singleton_players_t _player(_self, from.value);
     auto p = _player.get_or_create(_self, player_info{});
-    auto _quantity = p.sign_income + p.share_income;
-    eosio_assert(_quantity.amount == 0, "nothing to claim");
+    auto income = p.sign_income + p.share_income;
+    eosio_assert(income == 0, "nothing to claim");
 
     action(
         permission_level{_self, "active"_n},
         EOS_CONTRACT, "transfer"_n,
-        make_tuple(_self, from, _quantity,
+        make_tuple(_self, from, asset(income, EOS_SYMBOL),
                    string("claim sign income & share income.")))
         .send();
 

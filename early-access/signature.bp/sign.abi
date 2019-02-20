@@ -1,5 +1,5 @@
 {
-    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT Thu Feb 21 05:24:04 2019",
+    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT Thu Feb 21 06:03:31 2019",
     "version": "eosio::abi/1.1",
     "structs": [
         {
@@ -37,11 +37,11 @@
             "fields": [
                 {
                     "name": "sign_income",
-                    "type": "asset"
+                    "type": "uint64"
                 },
                 {
                     "name": "share_income",
-                    "type": "asset"
+                    "type": "uint64"
                 }
             ]
         },
@@ -63,7 +63,7 @@
                 },
                 {
                     "name": "quota",
-                    "type": "asset"
+                    "type": "uint64"
                 }
             ]
         },
