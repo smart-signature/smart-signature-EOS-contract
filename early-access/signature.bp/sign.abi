@@ -1,0 +1,138 @@
+{
+    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT Tue Feb 19 20:52:24 2019",
+    "version": "eosio::abi/1.1",
+    "structs": [
+        {
+            "name": "airdrop",
+            "base": "",
+            "fields": [
+                {
+                    "name": "to",
+                    "type": "name"
+                },
+                {
+                    "name": "amount",
+                    "type": "uint64"
+                }
+            ]
+        },
+        {
+            "name": "init",
+            "base": "",
+            "fields": []
+        },
+        {
+            "name": "player_info",
+            "base": "",
+            "fields": [
+                {
+                    "name": "article_income",
+                    "type": "asset"
+                },
+                {
+                    "name": "share_income",
+                    "type": "asset"
+                }
+            ]
+        },
+        {
+            "name": "share_info",
+            "base": "",
+            "fields": [
+                {
+                    "name": "id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "sponsor",
+                    "type": "asset"
+                },
+                {
+                    "name": "quota",
+                    "type": "asset"
+                }
+            ]
+        },
+        {
+            "name": "sign_info",
+            "base": "tradeable_token",
+            "fields": [
+                {
+                    "name": "id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "creator",
+                    "type": "name"
+                },
+                {
+                    "name": "fission_factor",
+                    "type": "uint64"
+                }
+            ]
+        },
+        {
+            "name": "token",
+            "base": "",
+            "fields": [
+                {
+                    "name": "id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "owner",
+                    "type": "name"
+                }
+            ]
+        },
+        {
+            "name": "tradeable_token",
+            "base": "token",
+            "fields": [
+                {
+                    "name": "price",
+                    "type": "uint64"
+                }
+            ]
+        }
+    ],
+    "types": [],
+    "actions": [
+        {
+            "name": "airdrop",
+            "type": "airdrop",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "init",
+            "type": "init",
+            "ricardian_contract": ""
+        }
+    ],
+    "tables": [
+        {
+            "name": "players",
+            "type": "player_info",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "shares",
+            "type": "share_info",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "signs",
+            "type": "sign_info",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        }
+    ],
+    "ricardian_clauses": [],
+    "variants": [],
+    "abi_extensions": []
+}
