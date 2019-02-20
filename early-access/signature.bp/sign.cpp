@@ -169,32 +169,32 @@ void sign::sell(name from, extended_asset in, const vector<string>& params) {
     */
 }
 
-void sign::onTransfer(name from, name to, asset quantity, string memo){
+void sign::onTransfer(name from, name to, extended_asset in, string memo){
     if (to != _self) return;
     require_auth(from);
 
-    eosio_assert(quantity.is_valid(), "Invalid token transfer");
-    eosio_assert(quantity.amount > 0, "must buy a positive amount");
+    eosio_assert(in.quantity.is_valid(), "Invalid token transfer");
+    eosio_assert(in.quantity.amount > 0, "must buy a positive amount");
     auto params = split(memo, ' ');
     eosio_assert(params.size() >= 1, "error memo");
 
     if (params[0] == "sponsor") {
-
+        sponsor(from, in, params);
         return;
     }
 
     if (params[0] == "create") {
-       
+        create(from, in, params);
         return;
     }    
 
     if (params[0] == "buy") {
-       
+        buy(from, in, params);
         return;
     }    
 
     if (params[0] == "sell") {
-        
+        sell(from, in, params);
         return;
     }
     /*

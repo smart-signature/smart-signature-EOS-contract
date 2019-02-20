@@ -56,7 +56,7 @@ CONTRACT sign : public eosio::contract
     ACTION airdrop(name to, uint64_t amount);
 
     void onTransfer(name from, name to,
-                    asset quantity, string memo); 
+                    extended_asset in, string memo); 
 
     void create(name from, extended_asset in, const vector<string>& params);
     void sponsor(name from, extended_asset in, const vector<string>& params);
@@ -71,7 +71,7 @@ CONTRACT sign : public eosio::contract
         if (action == ("transfer"_n).value)
         {
             auto transfer_data = unpack_action_data<st_transfer>();
-            onTransfer(transfer_data.from, transfer_data.to, transfer_data.quantity, transfer_data.memo);
+            onTransfer(transfer_data.from, transfer_data.to, extended_asset(transfer_data.quantity, name(code)), transfer_data.memo);
             return;
         }
 
