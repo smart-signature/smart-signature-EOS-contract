@@ -57,16 +57,24 @@ void sign::sponsor(name from, asset in, const vector<string> &params)
     auto sign = _signs.find(id);
     eosio_assert(sign != _signs.end(), "this signature is not exist");
 
-    // 处理分享者
+    // 创建一次分享
+    auto _id = _shares.available_primary_key();
+    _shares.emplace(_self, [&](auto &s) {
+        s.id = _shares.available_primary_key();
+        s.reader = from;
+        s.quota = in;
+    });
+
+    // 处理上游读者
     if (params.size() >= 2) {
         auto upstream_share_id = string_to_int(params[1]);
         auto share = _shares.find(upstream_share_id);
         if (share != _shares.end()) {
             auto delta = share->quota < in ? share->quota : in;
-            _shares.emplace(_self, [&](auto &s) {                 
+            _shares.modify(share, _self, [&](auto &s) {                 
                 s.quota -= delta;
-            });                
-            singleton_players_t _player(_self, share->sharer.value);
+            });
+            singleton_players_t _player(_self, share->reader.value);
             auto p = _player.get_or_create(_self, player_info{});
             p.share_income += delta;
             _player.set(p, _self);
@@ -78,10 +86,7 @@ void sign::sponsor(name from, asset in, const vector<string> &params)
     singleton_players_t _player(_self, sign->author.value);
     auto p = _player.get_or_create(_self, player_info{});
     p.article_income += in;
-    _player.set(p, _self);    
-
-    // 创建分享
-    // TODO(minakokojima)
+    _player.set(p, _self);
 }
 
 void sign::onTransfer(name from, name to, extended_asset in, string memo)

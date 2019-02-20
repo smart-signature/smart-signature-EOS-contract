@@ -44,7 +44,7 @@ CONTRACT sign : public eosio::contract
     {   
         uint64_t id;                // 分享 id
         uint64_t target_sign_id;    // 目标签名 id
-        name sharer;                // 分享者
+        name reader;                // 读者
         asset quota;                // 剩余配额  
         uint64_t primary_key()const { return id; }  
     };
