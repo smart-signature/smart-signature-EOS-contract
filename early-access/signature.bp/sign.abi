@@ -1,5 +1,5 @@
 {
-    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT Thu Feb 21 05:09:13 2019",
+    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT Thu Feb 21 05:24:04 2019",
     "version": "eosio::abi/1.1",
     "structs": [
         {
@@ -36,7 +36,7 @@
             "base": "",
             "fields": [
                 {
-                    "name": "article_income",
+                    "name": "sign_income",
                     "type": "asset"
                 },
                 {

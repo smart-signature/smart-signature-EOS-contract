@@ -26,12 +26,14 @@ CONTRACT sign : public eosio::contract
         _signs(receiver, receiver.value),
         _shares(receiver, receiver.value) {}
 
+    // 用户表格，记录收入，scope 为用户账户
     struct [[eosio::table("players")]] player_info
     {
-        asset article_income;
-        asset share_income;
+        asset sign_income; // 签名收入
+        asset share_income;   // 分享收入
     };    
 
+    // 签名表格，全局，scope 为此合约
     struct[[eosio::table("signs")]] sign_info
     {
         uint64_t id; // 签名 id
@@ -40,6 +42,7 @@ CONTRACT sign : public eosio::contract
         uint64_t primary_key()const { return id; }
     };
 
+    // 分享表格，全局，scope 为此合约
     struct [[eosio::table("shares")]] share_info
     {   
         uint64_t id;                // 分享 id
@@ -60,9 +63,7 @@ CONTRACT sign : public eosio::contract
     ACTION claim(name from);
 
     void onTransfer(name from, name to,
-                    asset in, string memo); 
-
-    void create(name from, asset in, const vector<string>& params);
+                    asset in, string memo);
     void share(name from, asset in, const vector<string>& params);
     
     void apply(uint64_t receiver, uint64_t code, uint64_t action)
@@ -80,6 +81,7 @@ CONTRACT sign : public eosio::contract
         {
             EOSIO_DISPATCH_HELPER(sign,
                 (init)
+                (create)
                 (claim)
             )
         }

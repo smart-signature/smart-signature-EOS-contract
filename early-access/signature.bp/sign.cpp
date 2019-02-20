@@ -5,6 +5,9 @@
 
 #include "sign.hpp"
 
+/**
+    合约初始化
+*/
 void sign::init()
 {
     require_auth(_self);
@@ -15,8 +18,8 @@ void sign::init()
 
     @param from 作者
     @param asset 门槛
-    @params params 裂变系数
-*/
+    @param params 裂变系数
+*/    
 void sign::create(name from, uint64_t fission_factor)
 {
     require_auth(from);
@@ -36,7 +39,7 @@ void sign::create(name from, uint64_t fission_factor)
 
     @param from 读者
     @param in 赏金
-    @params params 签名 ID，上游分享 ID
+    @param params 签名 ID，上游分享 ID
 */
 void sign::share(name from, asset in, const vector<string> &params)
 {
@@ -57,12 +60,14 @@ void sign::share(name from, asset in, const vector<string> &params)
     });
 
     // 处理上游读者
-    if (params.size() >= 2) {
+    if (params.size() >= 2)
+    {
         auto upstream_share_id = string_to_int(params[1]);
         auto share = _shares.find(upstream_share_id);
-        if (share != _shares.end()) {
+        if (share != _shares.end())
+        {
             auto delta = share->quota < in ? share->quota : in;
-            _shares.modify(share, _self, [&](auto &s) {                 
+            _shares.modify(share, _self, [&](auto &s) {
                 s.quota -= delta;
             });
             singleton_players_t _player(_self, share->reader.value);
@@ -70,48 +75,63 @@ void sign::share(name from, asset in, const vector<string> &params)
             p.share_income += delta;
             _player.set(p, _self);
             in -= delta;
-        } 
+        }
     }
 
     // 处理作者
     singleton_players_t _player(_self, sign->author.value);
     auto p = _player.get_or_create(_self, player_info{});
-    p.article_income += in;
+    p.sign_income += in;
     _player.set(p, _self);
 }
 
+/**
+    提现
+
+    @param from 发起者
+*/
 void sign::claim(name from)
 {
     require_auth(from);
     singleton_players_t _player(_self, from.value);
-    auto p = _player.get_or_create(_self, player_info{.article_income = asset(0, EOS_SYMBOL),
+    auto p = _player.get_or_create(_self, player_info{.sign_income = asset(0, EOS_SYMBOL),
                                                       .share_income = asset(0, EOS_SYMBOL)});
-    auto _quantity = p.article_income + p.share_income;
+    auto _quantity = p.sign_income + p.share_income;
     eosio_assert(_quantity.amount == 0, "nothing to claim");
 
     action(
         permission_level{_self, "active"_n},
         EOS_CONTRACT, "transfer"_n,
         make_tuple(_self, from, _quantity,
-                   string("claim article income & share income.")))
+                   string("claim sign income & share income.")))
         .send();
-    p.article_income = asset(0, EOS_SYMBOL);
+
+    p.sign_income = asset(0, EOS_SYMBOL);
     p.share_income = asset(0, EOS_SYMBOL);
     _player.set(p, from);
 }
 
+/**
+    转账路由
+
+    @param from 发起者
+    @param to 接受者
+    @param in 资产
+    @param memo 备忘录
+*/
 void sign::onTransfer(name from, name to, asset in, string memo)
 {
-    if (to != _self) return;
+    if (to != _self)
+        return;
     require_auth(from);
 
-    eosio_assert(_code == "eosio.token"_n, "code is not eosio.token, only true EOS token is allowed");
-    eosio_assert(in.symbol == EOS_SYMBOL, "symbol is not EOS_SYMBOL, only true EOS token is allowed");
+    eosio_assert(_code == EOS_CONTRACT, "code is not eosio.token, only true EOS token is allowed");
+    eosio_assert(in.symbol == EOS_SYMBOL, "symbol is not equal EOS_SYMBOL, only true EOS token is allowed");
     eosio_assert(in.is_valid(), "Invalid token transfer");
     eosio_assert(in.amount > 0, "must transfer a positive amount");
 
     auto params = split(memo, ' ');
-    eosio_assert(params.size() >= 1, "error memo");    
+    eosio_assert(params.size() >= 1, "error memo");
 
     if (params[0] == "share")
     {
