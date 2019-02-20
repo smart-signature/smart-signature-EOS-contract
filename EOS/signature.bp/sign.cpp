@@ -7,20 +7,6 @@
 
 void sign::init() {
     require_auth(_self);
-    /*
-    if (_market.begin() == _market.end()) {
-        const uint64_t init_dummy_supply = 40000000ll * 10000ll;
-        const uint64_t init_dummy_balance = 80000ll * 10000ll;
-
-        _market.emplace(_self, [&](auto &m) {
-            m.supply.amount = init_dummy_supply;
-            m.supply.symbol = SST_SYMBOL;
-            m.balance.amount = init_dummy_balance;
-            m.balance.symbol = EOS_SYMBOL;
-            m.progress = 0;
-        });        
-    }    
-    */
 }  
 
 void sign::airdrop(name to, uint64_t amount) {
@@ -28,7 +14,7 @@ void sign::airdrop(name to, uint64_t amount) {
     /*
     singleton_players_t _players(_self, to);
     auto p = _players.get_or_create(_self, player_info{});
-//    p.pool_profit += amount;
+    // p.pool_profit += amount;
     _players.set(p, _self);
     */
 }
