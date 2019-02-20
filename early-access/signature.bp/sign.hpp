@@ -59,7 +59,7 @@ CONTRACT sign : public eosio::contract
     ACTION claim(name from);         
 
     void onTransfer(name from, name to,
-                    extended_asset in, string memo); 
+                    asset in, string memo); 
 
     void create(name from, asset in, const vector<string>& params);
     void share(name from, asset in, const vector<string>& params);
@@ -70,7 +70,7 @@ CONTRACT sign : public eosio::contract
         if (action == ("transfer"_n).value)
         {
             auto transfer_data = unpack_action_data<st_transfer>();
-            onTransfer(transfer_data.from, transfer_data.to, extended_asset(transfer_data.quantity, name(code)), transfer_data.memo);
+            onTransfer(transfer_data.from, transfer_data.to, transfer_data.quantity, transfer_data.memo);
             return;
         }
 

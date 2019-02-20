@@ -10,26 +10,6 @@ void sign::init()
     require_auth(_self);
 }
 
-void sign::claim(name from)
-{
-    require_auth(from);
-    singleton_players_t _player(_self, from.value);
-    auto p = _player.get_or_create(_self, player_info{.article_income = asset(0, EOS_SYMBOL),
-                                                      .share_income = asset(0, EOS_SYMBOL)});
-    auto _quantity = p.article_income + p.share_income;
-    eosio_assert(_quantity.amount == 0, "nothing to claim");
-
-    action(
-        permission_level{_self, "active"_n},
-        EOS_CONTRACT, "transfer"_n,
-        make_tuple(_self, from, _quantity,
-                   string("claim article income & share income.")))
-        .send();
-    p.article_income = asset(0, EOS_SYMBOL);
-    p.share_income = asset(0, EOS_SYMBOL);
-    _player.set(p, from);
-}
-
 /**
     创建一个签名
 
@@ -103,30 +83,48 @@ void sign::share(name from, asset in, const vector<string> &params)
     _player.set(p, _self);
 }
 
-void sign::onTransfer(name from, name to, extended_asset in, string memo)
+void sign::claim(name from)
 {
-    if (to != _self)
-        return;
+    require_auth(from);
+    singleton_players_t _player(_self, from.value);
+    auto p = _player.get_or_create(_self, player_info{.article_income = asset(0, EOS_SYMBOL),
+                                                      .share_income = asset(0, EOS_SYMBOL)});
+    auto _quantity = p.article_income + p.share_income;
+    eosio_assert(_quantity.amount == 0, "nothing to claim");
+
+    action(
+        permission_level{_self, "active"_n},
+        EOS_CONTRACT, "transfer"_n,
+        make_tuple(_self, from, _quantity,
+                   string("claim article income & share income.")))
+        .send();
+    p.article_income = asset(0, EOS_SYMBOL);
+    p.share_income = asset(0, EOS_SYMBOL);
+    _player.set(p, from);
+}
+
+void sign::onTransfer(name from, name to, asset in, string memo)
+{
+    if (to != _self) return;
     require_auth(from);
 
-    eosio_assert(in.quantity.is_valid(), "Invalid token transfer");
-    eosio_assert(in.quantity.amount > 0, "must buy a positive amount");
-
-    eosio_assert(in.contract == "eosio.token"_n, "only true EOS token is allowed");
-    eosio_assert(in.quantity.symbol == EOS_SYMBOL, "only true EOS token is allowed");
+    eosio_assert(_code == "eosio.token"_n, "code is not eosio.token, only true EOS token is allowed");
+    eosio_assert(in.symbol == EOS_SYMBOL, "symbol is not EOS_SYMBOL, only true EOS token is allowed");
+    eosio_assert(in.is_valid(), "Invalid token transfer");
+    eosio_assert(in.amount > 0, "must transfer a positive amount");
 
     auto params = split(memo, ' ');
     eosio_assert(params.size() >= 1, "error memo");    
 
     if (params[0] == "share")
     {
-        share(from, in.quantity, params);
+        share(from, in, params);
         return;
     }
 
     if (params[0] == "create")
     {
-        create(from, in.quantity, params);
+        create(from, in, params);
         return;
     }
 }
