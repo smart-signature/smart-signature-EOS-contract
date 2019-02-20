@@ -37,7 +37,7 @@ CONTRACT sign : public eosio::contract
     struct[[eosio::table("signs")]] sign_info
     {
         uint64_t id; // 签名 id
-        name creator;
+        name creator; // 创建者
         uint64_t fission_factor; // 裂变系数*1000
         uint64_t primary_key()const { return id; }
     };
@@ -55,13 +55,7 @@ CONTRACT sign : public eosio::contract
     sign_index_t _signs;
     typedef singleton<"shares"_n, share_info> singleton_share_t;
     
-
     ACTION init();
-    ACTION airdrop(name to, uint64_t amount);
-
-    // 服务器定时调用，同步树状结构数据。比如现在是第100玩家进场，
-    // 假设前20个可以拿到share_income，那么将前20个的share_income同步进来。
-    ACTION settle(name to, uint64_t amount, const vector<string>& params);
     ACTION claim(name from);         
 
     void onTransfer(name from, name to,
@@ -85,14 +79,11 @@ CONTRACT sign : public eosio::contract
         {
             EOSIO_DISPATCH_HELPER(sign,
                 (init)
-                (airdrop)
-                (settle)
                 (claim)
             )
         }
     }
 };
-
 
 extern "C"
 {
