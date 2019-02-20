@@ -44,7 +44,8 @@ CONTRACT sign : public eosio::contract
     {
         uint64_t id; // 对应的签名的 id
         asset sponsor; // 打赏了多少钱
-        asset quota; // 还剩多少配额    
+        asset quota; // 还剩多少配额  
+        uint64_t primary_key()const { return id; }  
     };    
 
     typedef singleton<"players"_n, player_info> singleton_players_t;
@@ -59,8 +60,8 @@ CONTRACT sign : public eosio::contract
     void onTransfer(name from, name to,
                     extended_asset in, string memo); 
 
-    void create(name from, extended_asset in, const vector<string>& params);
-    void sponsor(name from, extended_asset in, const vector<string>& params);
+    void create(name from, asset in, const vector<string>& params);
+    void sponsor(name from, asset in, const vector<string>& params);
     
     void apply(uint64_t receiver, uint64_t code, uint64_t action)
     {
