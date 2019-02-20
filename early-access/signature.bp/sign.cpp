@@ -67,24 +67,21 @@ void sign::sponsor(name from, asset in, const vector<string> &params)
                 auto delta = s->quota < in ? s->quota : in;
                 _shares.emplace(_self, [&](auto &s) {                 
                     s.quota -= delta;
-                });
-                /*
+                });                
                 singleton_players_t _player(_self, ref.value);
                 auto p = _player.get_or_create(_self, player_info{});
                 p.share_income += delta;
                 _player.set(p, _self);
-                in -= delta;*/
+                in -= delta;
             }
         } 
     }
 
     // 处理作者
-    /*
-    singleton_players_t _player(_self, itr->creator);
+    singleton_players_t _player(_self, itr->creator.value);
     auto p = _player.get_or_create(_self, player_info{});
     p.article_income += in;
-    _player.set(p, _self);
-    */
+    _player.set(p, _self);    
 }
 
 void sign::onTransfer(name from, name to, extended_asset in, string memo)
