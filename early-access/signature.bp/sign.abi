@@ -1,5 +1,5 @@
 {
-    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT Thu Feb 21 03:04:15 2019",
+    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT Thu Feb 21 03:40:02 2019",
     "version": "eosio::abi/1.1",
     "structs": [
         {
@@ -40,8 +40,12 @@
                     "type": "uint64"
                 },
                 {
-                    "name": "sponsor",
-                    "type": "asset"
+                    "name": "target_sign_id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "sharer",
+                    "type": "name"
                 },
                 {
                     "name": "quota",
@@ -58,7 +62,7 @@
                     "type": "uint64"
                 },
                 {
-                    "name": "creator",
+                    "name": "author",
                     "type": "name"
                 },
                 {

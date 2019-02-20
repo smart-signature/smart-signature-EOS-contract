@@ -54,8 +54,8 @@ uint64_t string_to_price(string s) {
 uint64_t string_to_int(string s) {
     uint64_t z = 0;
     for (int i=0;i<s.size();++i) {
+        z *= 10;        
         z += s[i] - '0';
-        z *= 10;
     }
     return z;
 }

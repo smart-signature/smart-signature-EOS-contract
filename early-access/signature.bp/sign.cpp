@@ -38,11 +38,11 @@ void sign::create(name from, asset in, const vector<string> &params)
 
     auto _fission_factor = string_to_price(params[1]);
     eosio_assert(_fission_factor > 1000, "illegal fission_factor"); // 裂变系数还需要一个最大值限定
-
+    
     auto _id = _signs.available_primary_key();
     _signs.emplace(_self, [&](auto &s) {
         s.id = _signs.available_primary_key();
-        s.creator = from;
+        s.author = from;
         s.fission_factor = _fission_factor;
     });
 }
@@ -53,35 +53,35 @@ void sign::sponsor(name from, asset in, const vector<string> &params)
     eosio_assert(in.amount >= 1000, "you need at least 0.1 EOS to sponsor a signature"); // 最小打赏 0.1 EOS
     eosio_assert(params.size() >= 1, "No ID found..");
 
-    auto id = string_to_price(params[0]);
-    auto itr = _signs.find(id);
-    eosio_assert(itr != _signs.end(), "this article signature is not exist");
+    auto id = string_to_int(params[0]);
+    auto sign = _signs.find(id);
+    eosio_assert(sign != _signs.end(), "this signature is not exist");
 
     // 处理分享者
     if (params.size() >= 2) {
-        auto ref = name(params[1]);
-        if (is_account(ref)) {
-             share_index_t _shares(_self, ref.value);
-             auto s = _shares.find(id);
-             if (s != _shares.end()) {
-                auto delta = s->quota < in ? s->quota : in;
-                _shares.emplace(_self, [&](auto &s) {                 
-                    s.quota -= delta;
-                });                
-                singleton_players_t _player(_self, ref.value);
-                auto p = _player.get_or_create(_self, player_info{});
-                p.share_income += delta;
-                _player.set(p, _self);
-                in -= delta;
-            }
+        auto upstream_share_id = string_to_int(params[1]);
+        auto share = _shares.find(upstream_share_id);
+        if (share != _shares.end()) {
+            auto delta = share->quota < in ? share->quota : in;
+            _shares.emplace(_self, [&](auto &s) {                 
+                s.quota -= delta;
+            });                
+            singleton_players_t _player(_self, share->sharer.value);
+            auto p = _player.get_or_create(_self, player_info{});
+            p.share_income += delta;
+            _player.set(p, _self);
+            in -= delta;
         } 
     }
 
     // 处理作者
-    singleton_players_t _player(_self, itr->creator.value);
+    singleton_players_t _player(_self, sign->author.value);
     auto p = _player.get_or_create(_self, player_info{});
     p.article_income += in;
     _player.set(p, _self);    
+
+    // 创建分享
+    // TODO(minakokojima)
 }
 
 void sign::onTransfer(name from, name to, extended_asset in, string memo)
@@ -92,13 +92,12 @@ void sign::onTransfer(name from, name to, extended_asset in, string memo)
 
     eosio_assert(in.quantity.is_valid(), "Invalid token transfer");
     eosio_assert(in.quantity.amount > 0, "must buy a positive amount");
-   // eosio_assert(in.contract == "eosio.token"_n, "must be EOS");
-    //eosio_assert(in.symbol == "EOS"_n, "must be EOS");
-    auto params = split(memo, ' ');
-    eosio_assert(params.size() >= 1, "error memo");
 
     eosio_assert(in.contract == "eosio.token"_n, "only true EOS token is allowed");
     eosio_assert(in.quantity.symbol == EOS_SYMBOL, "only true EOS token is allowed");
+
+    auto params = split(memo, ' ');
+    eosio_assert(params.size() >= 1, "error memo");    
 
     if (params[0] == "sponsor")
     {
