@@ -9,15 +9,14 @@
 #include <eosiolib/transaction.hpp>
 
 #include "config.hpp"
-#include "model/Contract/EOS/util/util.hpp"
-#include "model/Contract/EOS/nft/nft.hpp"
+#include "utils.hpp"
+#include "NFT.hpp"
 // include "council.hpp"
 #include "kyubey.hpp"
 
 using std::string;
 using std::vector;
 using namespace eosio;
-using namespace kyubeyutil;
 using namespace config;
 
 typedef uint64_t time;
@@ -35,7 +34,7 @@ CONTRACT sign : public eosio::contract
         asset share_income;
     };    
 
-    struct[[eosio::table("signs")]] sign_info : nft::st_nft
+    struct[[eosio::table("signs")]] sign_info : NFT::tradeable_token
     {
         uint64_t id; // 签名 id
         name creator;
@@ -53,32 +52,40 @@ CONTRACT sign : public eosio::contract
     typedef eosio::multi_index<"signs"_n, sign_info> sign_index_t;
     typedef eosio::multi_index<"shares"_n, share_info> share_index_t;
 
+    ACTION init();
+    ACTION airdrop(name to, uint64_t amount);
+
     void onTransfer(name from, name to,
                     asset quantity, string memo); 
 
     void create(name from, extended_asset in, const vector<string>& params);
-    void share(name from, extended_asset in, const vector<string>& params);      
+    void sponsor(name from, extended_asset in, const vector<string>& params);
+    void buy(name from, extended_asset in, const vector<string>& params);
+    void sell(name from, extended_asset in, const vector<string>& params);
+
+
+
+    void apply(uint64_t receiver, uint64_t code, uint64_t action)
+    {
+        auto &thiscontract = *this;
+        if (action == ("transfer"_n).value)
+        {
+            auto transfer_data = unpack_action_data<st_transfer>();
+            onTransfer(transfer_data.from, transfer_data.to, transfer_data.quantity, transfer_data.memo);
+            return;
+        }
+
+        if (code != _self.value) return;
+        switch (action)
+        {
+            EOSIO_DISPATCH_HELPER(sign,
+                (init)
+                (airdrop)
+            )
+        }
+    }
 };
 
-void sign::apply(uint64_t receiver, uint64_t code, uint64_t action)
-{
-    auto &thiscontract = *this;
-    if (action == ("transfer"_n).value)
-    {
-        auto transfer_data = unpack_action_data<kyubeyutil::st_transfer>();
-        onTransfer(transfer_data.from, transfer_data.to, transfer_data.quantity, transfer_data.memo);
-        return;
-    }
-
-    if (code != _self.value) return;
-    switch (action)
-    {
-        EOSIO_DISPATCH_HELPER(sign,
-            (create),
-            (share)
-        )
-    }
-}
 
 extern "C"
 {
