@@ -68,7 +68,9 @@ void sign::claim(name from) {
         make_tuple(_self, from, _quantity,
             string("claim article income & share income."))
     ).send();        
-
+    p.article_income = asset(0, EOS_SYMBOL);
+    p.share_income = asset(0, EOS_SYMBOL);
+    _player.set(p, from);
 }
 
 void sign::create(name from, extended_asset in, const vector<string>& params) {

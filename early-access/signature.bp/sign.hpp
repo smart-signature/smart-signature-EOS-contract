@@ -47,7 +47,7 @@ CONTRACT sign : public eosio::contract
         uint64_t id; // 对应的签名的 id
         asset sponsor; // 打赏了多少钱
         asset quota; // 还剩多少配额
-
+    
     };    
 
     typedef singleton<"players"_n, player_info> singleton_players_t;
