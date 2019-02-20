@@ -56,21 +56,21 @@ void sign::share(name from, asset in, const vector<string> &params)
     _shares.emplace(_self, [&](auto &s) {
         s.id = _shares.available_primary_key();
         s.reader = from;
-        s.quota = in;
+        s.quota = in.amount * sign->fission_factor;
     });
 
     // 处理上游读者
     if (params.size() >= 2)
     {
         auto upstream_share_id = string_to_int(params[1]);
-        auto share = _shares.find(upstream_share_id);
-        if (share != _shares.end())
+        auto upstream_share = _shares.find(upstream_share_id);
+        if (upstream_share != _shares.end())
         {
-            auto delta = share->quota < in ? share->quota : in;
-            _shares.modify(share, _self, [&](auto &s) {
+            auto delta = upstream_share->quota < in.amount ? upstream_share->quota : in.amount;
+            _shares.modify(upstream_share, _self, [&](auto &s) {
                 s.quota -= delta;
             });
-            singleton_players_t _player(_self, share->reader.value);
+            singleton_players_t _player(_self, upstream_share->reader.value);
             auto p = _player.get_or_create(_self, player_info{});
             p.share_income += delta;
             _player.set(p, _self);
@@ -81,7 +81,7 @@ void sign::share(name from, asset in, const vector<string> &params)
     // 处理作者
     singleton_players_t _player(_self, sign->author.value);
     auto p = _player.get_or_create(_self, player_info{});
-    p.sign_income += in;
+    p.sign_income += in.amount;
     _player.set(p, _self);
 }
 
@@ -94,8 +94,7 @@ void sign::claim(name from)
 {
     require_auth(from);
     singleton_players_t _player(_self, from.value);
-    auto p = _player.get_or_create(_self, player_info{.sign_income = asset(0, EOS_SYMBOL),
-                                                      .share_income = asset(0, EOS_SYMBOL)});
+    auto p = _player.get_or_create(_self, player_info{});
     auto _quantity = p.sign_income + p.share_income;
     eosio_assert(_quantity.amount == 0, "nothing to claim");
 
@@ -106,8 +105,8 @@ void sign::claim(name from)
                    string("claim sign income & share income.")))
         .send();
 
-    p.sign_income = asset(0, EOS_SYMBOL);
-    p.share_income = asset(0, EOS_SYMBOL);
+    p.sign_income = 0;
+    p.share_income = 0;
     _player.set(p, from);
 }
 
