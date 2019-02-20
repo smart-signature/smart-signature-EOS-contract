@@ -56,7 +56,8 @@ CONTRACT sign : public eosio::contract
     index_share_t _shares;
     
     ACTION init();
-    ACTION claim(name from);         
+    ACTION create(name from, uint64_t fission_factor);
+    ACTION claim(name from);
 
     void onTransfer(name from, name to,
                     asset in, string memo); 

@@ -1,5 +1,5 @@
 {
-    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT Thu Feb 21 05:02:22 2019",
+    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT Thu Feb 21 05:09:13 2019",
     "version": "eosio::abi/1.1",
     "structs": [
         {
@@ -9,6 +9,20 @@
                 {
                     "name": "from",
                     "type": "name"
+                }
+            ]
+        },
+        {
+            "name": "create",
+            "base": "",
+            "fields": [
+                {
+                    "name": "from",
+                    "type": "name"
+                },
+                {
+                    "name": "fission_factor",
+                    "type": "uint64"
                 }
             ]
         },
@@ -77,6 +91,11 @@
         {
             "name": "claim",
             "type": "claim",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "create",
+            "type": "create",
             "ricardian_contract": ""
         },
         {

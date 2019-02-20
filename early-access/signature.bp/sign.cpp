@@ -17,20 +17,17 @@ void sign::init()
     @param asset 门槛
     @params params 裂变系数
 */
-void sign::create(name from, asset in, const vector<string> &params)
+void sign::create(name from, uint64_t fission_factor)
 {
     require_auth(from);
-    eosio_assert(in.amount >= 1000, "you need at least 0.1 EOS to create an new signature");
-    eosio_assert(params.size() == 2, "need 1 params");
+    eosio_assert(1000 <= fission_factor && fission_factor <= 2000, "illegal fission_factor");
 
-    auto _fission_factor = string_to_price(params[1]);
-    eosio_assert(_fission_factor > 1000, "illegal fission_factor"); // 裂变系数还需要一个最大值限定
-    
+    // 写入签名表格
     auto _id = _signs.available_primary_key();
     _signs.emplace(_self, [&](auto &s) {
         s.id = _signs.available_primary_key();
         s.author = from;
-        s.fission_factor = _fission_factor;
+        s.fission_factor = fission_factor;
     });
 }
 
@@ -51,7 +48,7 @@ void sign::share(name from, asset in, const vector<string> &params)
     auto sign = _signs.find(id);
     eosio_assert(sign != _signs.end(), "this signature is not exist");
 
-    // 创建一次分享
+    // 写入分享表格
     auto _id = _shares.available_primary_key();
     _shares.emplace(_self, [&](auto &s) {
         s.id = _shares.available_primary_key();
@@ -119,12 +116,6 @@ void sign::onTransfer(name from, name to, asset in, string memo)
     if (params[0] == "share")
     {
         share(from, in, params);
-        return;
-    }
-
-    if (params[0] == "create")
-    {
-        create(from, in, params);
         return;
     }
 }
