@@ -3,7 +3,7 @@
  *  @copyright Andoromeda
  */
 
-#include "signature.bp.hpp"
+#include "sign.hpp"
 
 void sign::init() {
     require_auth(_self);
