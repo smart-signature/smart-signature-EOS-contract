@@ -69,11 +69,7 @@ CONTRACT sign : public eosio::contract
 
     void create(name from, extended_asset in, const vector<string>& params);
     void sponsor(name from, extended_asset in, const vector<string>& params);
-    void buy(name from, extended_asset in, const vector<string>& params);
-    void sell(name from, extended_asset in, const vector<string>& params);
-
-
-
+    
     void apply(uint64_t receiver, uint64_t code, uint64_t action)
     {
         auto &thiscontract = *this;

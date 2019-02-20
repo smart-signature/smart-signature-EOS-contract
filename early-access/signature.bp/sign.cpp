@@ -193,46 +193,6 @@ void sign::sponsor(name from, extended_asset in, const vector<string>& params) {
     */
 }
 
-void sign::buy(name from, extended_asset in, const vector<string>& params) {
-    /*
-    eosio_assert(in.contract == "eosio.token"_n, "only true EOS token is allowed");
-    eosio_assert(in.symbol == EOS_SYMBOL, "only true EOS token is allowed.");
-   
-    asset out;
-    _market.modify(_market.begin(), 0, [&](auto &m) {
-        out = m.buy(in.amount * 95 / 100);
-    }); 
-
-    if (out.amount > 0){      
-        action(
-            permission_level{_self, "active"_n},
-            TOKEN_CONTRACT, "transfer"_n,
-            make_tuple(_self, from, out, std::string("buy some new token"))
-        ).send();
-    }
-    */
-}
-
-void sign::sell(name from, extended_asset in, const vector<string>& params) {
-    /*
-    eosio_assert(in.contract == TOKEN_CONTRACT, "only true SST token is allowed");
-    eosio_assert(in.symbol == SST_SYMBOL, "only true SST token is allowed");
-   
-    asset out;
-    _market.modify(_market.begin(), 0, [&](auto &m) {
-        out = m.sell(in.amount * 95 / 100);
-    });
-
-    if (out.amount > 0){
-        action(
-            permission_level{_self, "active"_n},
-            "eosio.token"_n, "transfer"_n,
-            make_tuple(_self, from, out, std::string("sell some new token"))
-        ).send();        
-    }
-    */
-}
-
 void sign::onTransfer(name from, name to, extended_asset in, string memo){
     if (to != _self) return;
     require_auth(from);
@@ -252,15 +212,6 @@ void sign::onTransfer(name from, name to, extended_asset in, string memo){
         return;
     }    
 
-    if (params[0] == "buy") {
-        buy(from, in, params);
-        return;
-    }    
-
-    if (params[0] == "sell") {
-        sell(from, in, params);
-        return;
-    }
     /*
     if (params[0] == "stake") {        
         eosio_assert(quantity.contract == TOKEN_CONTRACT, "must use SST to stake");
