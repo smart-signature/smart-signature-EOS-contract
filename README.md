@@ -2,7 +2,7 @@
 Yet Another Contract
 
 # 開發須知
-目前只由 @yukiexe 維護，在 master 上直接操作
+目前開發主要在 branch early-access 上，注意
 
 新來的 contributor ，請開個人 branch 維護，ex: xxx/xxxx
 
