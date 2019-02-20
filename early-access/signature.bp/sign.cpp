@@ -55,9 +55,9 @@ void sign::sponsor(name from, extended_asset in, const vector<string> &params)
     eosio_assert(in.contract == "eosio.token"_n, "only true EOS token is allowed");
     eosio_assert(in.quantity.symbol == EOS_SYMBOL, "only true EOS token is allowed");
     eosio_assert(in.quantity.amount >= 1000, "you need at least 0.1 EOS to sponsor a signature"); // 最小打赏 0.1 EOS
-    eosio_assert(params.size() >= 2, "No ID found..");
+    eosio_assert(params.size() >= 1, "No ID found..");
 
-    auto id = string_to_price(params[1]);
+    auto id = string_to_price(params[0]);
     auto itr = _signs.find(id);
     eosio_assert(itr != _signs.end(), "this article signature is not exist");
 }

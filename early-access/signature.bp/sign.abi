@@ -1,21 +1,7 @@
 {
-    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT Thu Feb 21 01:59:30 2019",
+    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT Thu Feb 21 02:26:54 2019",
     "version": "eosio::abi/1.1",
     "structs": [
-        {
-            "name": "airdrop",
-            "base": "",
-            "fields": [
-                {
-                    "name": "to",
-                    "type": "name"
-                },
-                {
-                    "name": "amount",
-                    "type": "uint64"
-                }
-            ]
-        },
         {
             "name": "claim",
             "base": "",
@@ -42,24 +28,6 @@
                 {
                     "name": "share_income",
                     "type": "asset"
-                }
-            ]
-        },
-        {
-            "name": "settle",
-            "base": "",
-            "fields": [
-                {
-                    "name": "to",
-                    "type": "name"
-                },
-                {
-                    "name": "amount",
-                    "type": "uint64"
-                },
-                {
-                    "name": "params",
-                    "type": "string[]"
                 }
             ]
         },
@@ -103,11 +71,6 @@
     "types": [],
     "actions": [
         {
-            "name": "airdrop",
-            "type": "airdrop",
-            "ricardian_contract": ""
-        },
-        {
             "name": "claim",
             "type": "claim",
             "ricardian_contract": ""
@@ -115,11 +78,6 @@
         {
             "name": "init",
             "type": "init",
-            "ricardian_contract": ""
-        },
-        {
-            "name": "settle",
-            "type": "settle",
             "ricardian_contract": ""
         }
     ],

@@ -10,9 +10,6 @@
 
 #include "config.hpp"
 #include "utils.hpp"
-// #include "NFT.hpp"
-// #include "council.hpp"
-#include "kyubey.hpp"
 
 using std::string;
 using std::vector;
@@ -25,8 +22,9 @@ CONTRACT sign : public eosio::contract
 {
   public:
     sign(name receiver, name code, datastream<const char *> ds) : 
-        contract(receiver, code, ds), 
-        _signs(receiver, receiver.value) {}
+        contract(receiver, code, ds),
+        _signs(receiver, receiver.value),
+        _shares(receiver, receiver.value) {}
 
     struct [[eosio::table("players")]] player_info
     {
@@ -46,14 +44,14 @@ CONTRACT sign : public eosio::contract
     {
         uint64_t id; // 对应的签名的 id
         asset sponsor; // 打赏了多少钱
-        asset quota; // 还剩多少配额
-    
+        asset quota; // 还剩多少配额    
     };    
 
     typedef singleton<"players"_n, player_info> singleton_players_t;
     typedef eosio::multi_index<"signs"_n, sign_info> sign_index_t;
     sign_index_t _signs;
-    typedef singleton<"shares"_n, share_info> singleton_share_t;
+    typedef eosio::multi_index<"shares"_n, share_info> share_index_t;
+    share_index_t _shares;
     
     ACTION init();
     ACTION claim(name from);         
