@@ -10,9 +10,6 @@
 
 #include "config.hpp"
 #include "utils.hpp"
-// #include "NFT.hpp"
-// #include "council.hpp"
-#include "kyubey.hpp"
 
 using std::string;
 using std::vector;
@@ -25,62 +22,57 @@ CONTRACT sign : public eosio::contract
 {
   public:
     sign(name receiver, name code, datastream<const char *> ds) : 
-        contract(receiver, code, ds), 
-        _signs(receiver, receiver.value) {}
+        contract(receiver, code, ds),
+        _signs(receiver, receiver.value),
+        _shares(receiver, receiver.value) {}
 
+    // 用户表格，记录收入，scope 为用户账户
     struct [[eosio::table("players")]] player_info
     {
-        asset article_income;
-        asset share_income;
+        uint64_t sign_income;    // 签名收入
+        uint64_t share_income;   // 分享收入
     };    
 
+    // 签名表格，全局，scope 为此合约
     struct[[eosio::table("signs")]] sign_info
     {
         uint64_t id; // 签名 id
-        name creator;
-        uint64_t fission_factor; // 裂变系数*1000
+        name author; // 作者
+        uint64_t fission_factor; // 裂变系数 * 1000
         uint64_t primary_key()const { return id; }
     };
 
+    // 分享表格，全局，scope 为此合约
     struct [[eosio::table("shares")]] share_info
-    {
-        uint64_t id; // 对应的签名的 id
-        asset sponsor; // 打赏了多少钱
-        asset quota; // 还剩多少配额
-    
-    };    
+    {   
+        uint64_t id;                // 分享 id
+        uint64_t target_sign_id;    // 目标签名 id
+        name reader;                // 读者
+        uint64_t quota;             // 剩余配额  
+        uint64_t primary_key()const { return id; }  
+    };
 
     typedef singleton<"players"_n, player_info> singleton_players_t;
-    typedef eosio::multi_index<"signs"_n, sign_info> sign_index_t;
-    sign_index_t _signs;
-    typedef singleton<"shares"_n, share_info> singleton_share_t;
+    typedef eosio::multi_index<"signs"_n, sign_info> index_sign_t;
+    typedef eosio::multi_index<"shares"_n, share_info> index_share_t;
+    index_sign_t _signs;
+    index_share_t _shares;
     
-
     ACTION init();
-    ACTION airdrop(name to, uint64_t amount);
-
-    // 服务器定时调用，同步树状结构数据。比如现在是第100玩家进场，
-    // 假设前20个可以拿到share_income，那么将前20个的share_income同步进来。
-    ACTION settle(name to, uint64_t amount, const vector<string>& params);
-    ACTION claim(name from);         
+    ACTION create(name from, uint64_t fission_factor);
+    ACTION claim(name from);
 
     void onTransfer(name from, name to,
-                    extended_asset in, string memo); 
-
-    void create(name from, extended_asset in, const vector<string>& params);
-    void sponsor(name from, extended_asset in, const vector<string>& params);
-    void buy(name from, extended_asset in, const vector<string>& params);
-    void sell(name from, extended_asset in, const vector<string>& params);
-
-
-
+                    asset in, string memo);
+    void share(name from, asset in, const vector<string>& params);
+    
     void apply(uint64_t receiver, uint64_t code, uint64_t action)
     {
         auto &thiscontract = *this;
         if (action == ("transfer"_n).value)
         {
             auto transfer_data = unpack_action_data<st_transfer>();
-            onTransfer(transfer_data.from, transfer_data.to, extended_asset(transfer_data.quantity, name(code)), transfer_data.memo);
+            onTransfer(transfer_data.from, transfer_data.to, transfer_data.quantity, transfer_data.memo);
             return;
         }
 
@@ -89,14 +81,12 @@ CONTRACT sign : public eosio::contract
         {
             EOSIO_DISPATCH_HELPER(sign,
                 (init)
-                (airdrop)
-                (settle)
+                (create)
                 (claim)
             )
         }
     }
 };
-
 
 extern "C"
 {

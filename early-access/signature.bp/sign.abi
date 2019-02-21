@@ -1,21 +1,7 @@
 {
-    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT Wed Feb 20 01:09:47 2019",
+    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT Thu Feb 21 06:03:31 2019",
     "version": "eosio::abi/1.1",
     "structs": [
-        {
-            "name": "airdrop",
-            "base": "",
-            "fields": [
-                {
-                    "name": "to",
-                    "type": "name"
-                },
-                {
-                    "name": "amount",
-                    "type": "uint64"
-                }
-            ]
-        },
         {
             "name": "claim",
             "base": "",
@@ -23,6 +9,20 @@
                 {
                     "name": "from",
                     "type": "name"
+                }
+            ]
+        },
+        {
+            "name": "create",
+            "base": "",
+            "fields": [
+                {
+                    "name": "from",
+                    "type": "name"
+                },
+                {
+                    "name": "fission_factor",
+                    "type": "uint64"
                 }
             ]
         },
@@ -36,30 +36,12 @@
             "base": "",
             "fields": [
                 {
-                    "name": "article_income",
-                    "type": "asset"
-                },
-                {
-                    "name": "share_income",
-                    "type": "asset"
-                }
-            ]
-        },
-        {
-            "name": "settle",
-            "base": "",
-            "fields": [
-                {
-                    "name": "to",
-                    "type": "name"
-                },
-                {
-                    "name": "amount",
+                    "name": "sign_income",
                     "type": "uint64"
                 },
                 {
-                    "name": "params",
-                    "type": "string[]"
+                    "name": "share_income",
+                    "type": "uint64"
                 }
             ]
         },
@@ -72,12 +54,16 @@
                     "type": "uint64"
                 },
                 {
-                    "name": "sponsor",
-                    "type": "asset"
+                    "name": "target_sign_id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "reader",
+                    "type": "name"
                 },
                 {
                     "name": "quota",
-                    "type": "asset"
+                    "type": "uint64"
                 }
             ]
         },
@@ -90,7 +76,7 @@
                     "type": "uint64"
                 },
                 {
-                    "name": "creator",
+                    "name": "author",
                     "type": "name"
                 },
                 {
@@ -103,23 +89,18 @@
     "types": [],
     "actions": [
         {
-            "name": "airdrop",
-            "type": "airdrop",
-            "ricardian_contract": ""
-        },
-        {
             "name": "claim",
             "type": "claim",
             "ricardian_contract": ""
         },
         {
-            "name": "init",
-            "type": "init",
+            "name": "create",
+            "type": "create",
             "ricardian_contract": ""
         },
         {
-            "name": "settle",
-            "type": "settle",
+            "name": "init",
+            "type": "init",
             "ricardian_contract": ""
         }
     ],
