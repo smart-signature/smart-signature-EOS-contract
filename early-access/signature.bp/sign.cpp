@@ -17,10 +17,9 @@ void sign::init()
     创建一个签名
 
     @param from 作者
-    @param asset 门槛
     @param params 裂变系数
 */    
-void sign::create(name from, uint64_t fission_factor)
+void sign::publish(name from, uint64_t fission_factor)
 {
     require_auth(from);
     eosio_assert(1000 <= fission_factor && fission_factor <= 2000, "illegal fission_factor");
