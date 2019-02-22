@@ -1,5 +1,5 @@
 {
-    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT Thu Feb 21 21:11:09 2019",
+    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT Thu Feb 21 21:20:58 2019",
     "version": "eosio::abi/1.1",
     "structs": [
         {
@@ -16,28 +16,6 @@
             "name": "init",
             "base": "",
             "fields": []
-        },
-        {
-            "name": "market",
-            "base": "",
-            "fields": [
-                {
-                    "name": "id",
-                    "type": "uint64"
-                },
-                {
-                    "name": "supply",
-                    "type": "asset"
-                },
-                {
-                    "name": "balance",
-                    "type": "asset"
-                },
-                {
-                    "name": "progress",
-                    "type": "uint64"
-                }
-            ]
         },
         {
             "name": "player_info",
@@ -127,13 +105,6 @@
         }
     ],
     "tables": [
-        {
-            "name": "market",
-            "type": "market",
-            "index_type": "i64",
-            "key_names": [],
-            "key_types": []
-        },
         {
             "name": "players",
             "type": "player_info",

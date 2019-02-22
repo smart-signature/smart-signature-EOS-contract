@@ -11,9 +11,7 @@
 void sign::init()
 {
     require_auth(_self);
-    while (_market.begin() != _market.end()) {
-        _market.erase(_market.begin());
-    }
+    
 }
 
 /**
