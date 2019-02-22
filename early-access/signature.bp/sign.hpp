@@ -59,7 +59,7 @@ CONTRACT sign : public eosio::contract
     index_share_t _shares;
     
     ACTION init();
-    ACTION create(name from, uint64_t fission_factor);
+    ACTION publish(name from, uint64_t fission_factor);
     ACTION claim(name from);
 
     void onTransfer(name from, name to,
@@ -81,7 +81,7 @@ CONTRACT sign : public eosio::contract
         {
             EOSIO_DISPATCH_HELPER(sign,
                 (init)
-                (create)
+                (publish)
                 (claim)
             )
         }
