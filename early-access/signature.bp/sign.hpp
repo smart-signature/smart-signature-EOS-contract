@@ -25,7 +25,6 @@ CONTRACT sign : public eosio::contract
         contract(receiver, code, ds),
         _signs(receiver, receiver.value),
         _market(receiver, receiver.value),
-
         _shares(receiver, receiver.value) {}
 
     // 用户表格，记录收入，scope 为用户账户
@@ -54,7 +53,7 @@ CONTRACT sign : public eosio::contract
         uint64_t primary_key()const { return id; }  
     };
 
-    struct [[eosio::table("shares")]] market 
+    struct [[eosio::table("market")]] market 
     {
         uint64_t id = 0;        
         asset supply;
