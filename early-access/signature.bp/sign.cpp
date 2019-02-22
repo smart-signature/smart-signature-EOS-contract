@@ -11,7 +11,6 @@
 void sign::init()
 {
     require_auth(_self);
-    
 }
 
 /**
@@ -28,7 +27,7 @@ void sign::publish(name from, uint64_t fission_factor)
     // 写入签名表格
     auto _id = _signs.available_primary_key();
     _signs.emplace(_self, [&](auto &s) {
-        s.id = _signs.available_primary_key();
+        s.id = _id;
         s.author = from;
         s.fission_factor = fission_factor;
     });
@@ -48,13 +47,12 @@ void sign::share(name from, asset in, const vector<string> &params)
     eosio_assert(params.size() >= 1, "No ID found..");
 
     auto id = string_to_int(params[0]);
-    auto sign = _signs.find(id);
-    eosio_assert(sign != _signs.end(), "this signature is not exist");
+    auto sign = _signs.require_find(id, "this signature is not exist");
 
     // 写入分享表格
     auto _id = _shares.available_primary_key();
     _shares.emplace(_self, [&](auto &s) {
-        s.id = _shares.available_primary_key();
+        s.id = _id;
         s.reader = from;
         s.quota = in.amount * sign->fission_factor;
     });
@@ -95,7 +93,7 @@ void sign::claim(name from)
     require_auth(from);
     singleton_players_t _player(_self, from.value);
     auto p = _player.get_or_create(_self, player_info{});
-    auto income = p.sign_income + p.share_income;
+    uint64_t income = p.sign_income + p.share_income;
     eosio_assert(income == 0, "nothing to claim");
 
     action(
