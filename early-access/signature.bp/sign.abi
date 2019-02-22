@@ -1,5 +1,5 @@
 {
-    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT Thu Feb 21 06:03:31 2019",
+    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT Thu Feb 21 21:20:58 2019",
     "version": "eosio::abi/1.1",
     "structs": [
         {
@@ -9,20 +9,6 @@
                 {
                     "name": "from",
                     "type": "name"
-                }
-            ]
-        },
-        {
-            "name": "create",
-            "base": "",
-            "fields": [
-                {
-                    "name": "from",
-                    "type": "name"
-                },
-                {
-                    "name": "fission_factor",
-                    "type": "uint64"
                 }
             ]
         },
@@ -41,6 +27,20 @@
                 },
                 {
                     "name": "share_income",
+                    "type": "uint64"
+                }
+            ]
+        },
+        {
+            "name": "publish",
+            "base": "",
+            "fields": [
+                {
+                    "name": "from",
+                    "type": "name"
+                },
+                {
+                    "name": "fission_factor",
                     "type": "uint64"
                 }
             ]
@@ -94,13 +94,13 @@
             "ricardian_contract": ""
         },
         {
-            "name": "create",
-            "type": "create",
+            "name": "init",
+            "type": "init",
             "ricardian_contract": ""
         },
         {
-            "name": "init",
-            "type": "init",
+            "name": "publish",
+            "type": "publish",
             "ricardian_contract": ""
         }
     ],

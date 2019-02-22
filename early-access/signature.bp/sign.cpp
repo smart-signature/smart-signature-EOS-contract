@@ -11,6 +11,7 @@
 void sign::init()
 {
     require_auth(_self);
+    
 }
 
 /**
