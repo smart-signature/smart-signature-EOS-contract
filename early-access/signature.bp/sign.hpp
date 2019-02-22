@@ -24,6 +24,8 @@ CONTRACT sign : public eosio::contract
     sign(name receiver, name code, datastream<const char *> ds) : 
         contract(receiver, code, ds),
         _signs(receiver, receiver.value),
+        _market(receiver, receiver.value),
+
         _shares(receiver, receiver.value) {}
 
     // 用户表格，记录收入，scope 为用户账户
@@ -52,6 +54,26 @@ CONTRACT sign : public eosio::contract
         uint64_t primary_key()const { return id; }  
     };
 
+    struct [[eosio::table("shares")]] market 
+    {
+        uint64_t id = 0;        
+        asset supply;
+        asset balance;
+        uint64_t progress;                         
+        uint64_t primary_key() const { return id; }
+        
+        uint64_t fee(uint64_t x) {
+            return x * progress / 10000;
+        }
+
+        void update_progress(uint64_t new_progress) {
+            eosio_assert(new_progress <= 10000, "out of range");                                
+            progress = new_progress;
+        }
+    };
+
+    typedef eosio::multi_index<"market"_n, market> market_index;
+    market_index _market; 
     typedef singleton<"players"_n, player_info> singleton_players_t;
     typedef eosio::multi_index<"signs"_n, sign_info> index_sign_t;
     typedef eosio::multi_index<"shares"_n, share_info> index_share_t;
