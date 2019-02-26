@@ -46,7 +46,7 @@ void sign::share(name from, asset in, const vector<string> &params)
     eosio_assert(in.amount >= 1000, "you need at least 0.1 EOS to sponsor a signature"); // 最小打赏 0.1 EOS
     eosio_assert(params.size() >= 1, "No ID found..");
 
-    auto id = string_to_int(params[0]);
+    auto id = string_to_int(params[1]);
     auto sign = _signs.require_find(id, "this signature is not exist");
 
     // 写入分享表格
