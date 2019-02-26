@@ -54,7 +54,7 @@ void sign::share(name from, asset in, const vector<string> &params)
     _shares.emplace(_self, [&](auto &s) {
         s.id = _id;
         s.reader = from;
-        s.quota = in.amount * sign->fission_factor;
+        s.quota = in.amount * sign->fission_factor / 1000;
     });
 
     // 处理上游读者
