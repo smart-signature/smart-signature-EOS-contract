@@ -60,7 +60,7 @@ void sign::share(name from, asset in, const vector<string> &params)
     // 处理上游读者
     if (params.size() >= 2)
     {
-        auto upstream_share_id = string_to_int(params[1]);
+        auto upstream_share_id = string_to_int(params[2]);
         auto upstream_share = _shares.find(upstream_share_id);
         if (upstream_share != _shares.end())
         {
