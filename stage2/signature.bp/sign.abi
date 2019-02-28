@@ -1,7 +1,22 @@
 {
-    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT Wed Feb 27 22:04:08 2019",
+    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT Fri Mar  1 02:51:33 2019",
     "version": "eosio::abi/1.1",
     "structs": [
+        {
+            "name": "account",
+            "base": "",
+            "fields": [
+                {
+                    "name": "balance",
+                    "type": "asset"
+                }
+            ]
+        },
+        {
+            "name": "accounts",
+            "base": "account",
+            "fields": []
+        },
         {
             "name": "claim",
             "base": "",
@@ -16,6 +31,24 @@
             "name": "init",
             "base": "",
             "fields": []
+        },
+        {
+            "name": "issue",
+            "base": "",
+            "fields": [
+                {
+                    "name": "to",
+                    "type": "name"
+                },
+                {
+                    "name": "quantity",
+                    "type": "asset"
+                },
+                {
+                    "name": "memo",
+                    "type": "string"
+                }
+            ]
         },
         {
             "name": "player_info",
@@ -84,6 +117,28 @@
                     "type": "uint64"
                 }
             ]
+        },
+        {
+            "name": "transfer",
+            "base": "",
+            "fields": [
+                {
+                    "name": "from",
+                    "type": "name"
+                },
+                {
+                    "name": "to",
+                    "type": "name"
+                },
+                {
+                    "name": "quantity",
+                    "type": "asset"
+                },
+                {
+                    "name": "memo",
+                    "type": "string"
+                }
+            ]
         }
     ],
     "types": [],
@@ -99,12 +154,29 @@
             "ricardian_contract": ""
         },
         {
+            "name": "issue",
+            "type": "issue",
+            "ricardian_contract": ""
+        },
+        {
             "name": "publish",
             "type": "publish",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "transfer",
+            "type": "transfer",
             "ricardian_contract": ""
         }
     ],
     "tables": [
+        {
+            "name": "accounts",
+            "type": "accounts",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
         {
             "name": "players",
             "type": "player_info",

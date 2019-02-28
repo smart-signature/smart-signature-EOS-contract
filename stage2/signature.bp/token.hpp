@@ -11,8 +11,9 @@
 #include <string>
 
 using std::string;
+using namespace eosio;
 
-class token : public contract {
+class token : virtual public eosio::contract { // 
 public:
    using contract::contract;
 
@@ -51,7 +52,7 @@ public:
       return ac.balance;
    }
 
-private:
+protected:
    struct account {
       asset balance;
 
@@ -69,7 +70,6 @@ private:
    typedef eosio::multi_index<"accounts"_n, account> accounts;
    typedef eosio::multi_index<"stat"_n, currency_stats> stats;
 
- protected:
    void sub_balance(name owner, asset value);
    void add_balance(name owner, asset value, name ram_payer);
 };

@@ -10,7 +10,7 @@
 #include <eosiolib/eosio.hpp>
 #include <eosiolib/asset.hpp>
 // include <eosiolib/transaction.hpp>
-// include <cmath>
+#include <cmath>
 typedef double real_type;
 
 using namespace eosio ;
@@ -19,7 +19,7 @@ constexpr uint64_t K = 10000000000;
 
 class kyubey : public token {
     public:
-        using token::token ;
+     using token::token;
 
         /*
         template <typename T>
@@ -36,11 +36,11 @@ class kyubey : public token {
 
             // 驗證 token
             auto itr = table.require_find(id, "Unable to find NFT");
-            /*
+            
             eosio_assert(quantity.is_valid(), "invalid quantity");
             eosio_assert(token.amount > 0, "must transfer positive quantity");
             eosio_assert(quantity.symbol == st.supply.symbol, "symbol precision mismatch");
-            */
+            
             eosio_assert(memo.size() <= 256, "memo has more than 256 bytes");
 
             // 誰付 ram 錢
@@ -52,8 +52,10 @@ class kyubey : public token {
             });
         }*/
 
-        void buy(name account, asset in) {    
+        void buy(name account, asset in) {
+            market_t _market( _self, _self.value);
             asset out;
+            
             _market.modify(_market.begin(), _self, [&](auto &m) {
                 out = m.buy(in.amount);
             }); 
@@ -66,21 +68,22 @@ class kyubey : public token {
         }
         
         void sell(name account, asset in) {
-            
+            market_t _market( _self, _self.value);
             sub_balance(account, in);          
             asset out;
             _market.modify(_market.begin(), _self, [&](auto &m) {
                 out = m.sell(in.amount);
-            });    
+            });
             
             action(
                 permission_level{_self, "active"_n},
-                EOS_CONTRACT, "transfer"_n,
+                config::EOS_CONTRACT, "transfer"_n,
                 make_tuple(_self, account, out, std::string(""))
             ).send();
         }
-
-        struct market {
+    
+    private:
+        struct st_market {
             uint64_t id = 0;        
             asset supply;
             asset balance;
@@ -117,8 +120,8 @@ class kyubey : public token {
             }
             
             uint64_t primary_key() const { return id; }
-            EOSLIB_SERIALIZE(market, (id)(supply)(balance)(progress))
+            EOSLIB_SERIALIZE(st_market, (id)(supply)(balance)(progress))
         };
 
-        typedef eosio::multi_index<"market"_n, market> market_t;
+        typedef eosio::multi_index<"market"_n, st_market> market_t;
 };

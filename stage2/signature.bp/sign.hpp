@@ -16,26 +16,30 @@ using std::string;
 using std::vector;
 using namespace eosio;
 using namespace config;
+using namespace kyubeyutil;
 
 typedef uint64_t time;
 
-CONTRACT sign : public eosio::contract
+CONTRACT sign : virtual public eosio::contract, public kyubey
 {
   public:
     sign(name receiver, name code, datastream<const char *> ds) : 
         contract(receiver, code, ds),
+        kyubey(receiver, code, ds),
         _signs(receiver, receiver.value),
         _shares(receiver, receiver.value) {}
+
+    TABLE accounts : token::account {};
 
     // 用户表格，记录收入，scope 为用户账户
     struct [[eosio::table("players")]] player_info
     {
         uint64_t sign_income;    // 签名收入
         uint64_t share_income;   // 分享收入
-    };    
+    };
 
     // 签名表格，全局，scope 为此合约
-    struct[[eosio::table("signs")]] sign_info
+    struct [[eosio::table("signs")]] sign_info
     {
         uint64_t id; // 签名 id
         name author; // 作者
@@ -65,13 +69,13 @@ CONTRACT sign : public eosio::contract
 
     // Token management by token issueer player
     ACTION issue(name to, asset quantity, string memo) {
-        _contract_kyubey.issue(to, quantity, memo);
+        // _contract_kyubey.issue(to, quantity, memo);
         // _contract_dividend.stake(to, quantity);
     }
     ACTION transfer(name from, name to, asset quantity, string memo) {
         require_auth(from);
         // nft::transfer<sign_index_t>( {_self,_self.value}, from, to, id, memo );
-        _contract_kyubey.transfer(from, to, quantity, memo);
+        // _contract_kyubey.transfer(from, to, quantity, memo);
         // _contract_dividend.unstake(from, quantity, memo);
         // _contract_dividend.stake(to, quantity);
     }
