@@ -10,6 +10,7 @@
 
 #include "config.hpp"
 #include "util.hpp"
+#include "kyubey.hpp"
 
 using std::string;
 using std::vector;
@@ -61,6 +62,19 @@ CONTRACT sign : public eosio::contract
     ACTION init();
     ACTION publish(name from, uint64_t fission_factor);
     ACTION claim(name from);
+
+    // Token management by token issueer player
+    ACTION issue(name to, asset quantity, string memo) {
+        _contract_kyubey.issue(to, quantity, memo);
+        // _contract_dividend.stake(to, quantity);
+    }
+    ACTION transfer(name from, name to, asset quantity, string memo) {
+        require_auth(from);
+        // nft::transfer<sign_index_t>( {_self,_self.value}, from, to, id, memo );
+        _contract_kyubey.transfer(from, to, quantity, memo);
+        // _contract_dividend.unstake(from, quantity, memo);
+        // _contract_dividend.stake(to, quantity);
+    }
 
     void onTransfer(name from, name to,
                     asset in, string memo);
