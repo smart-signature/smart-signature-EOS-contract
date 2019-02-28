@@ -1,5 +1,6 @@
 /**
  *  @file
+ *  @version 1.0.190301
  *  @copyright defined in eos/LICENSE.txt
  */
 #pragma once
@@ -22,7 +23,6 @@ public:
    void no_permission_issue(name to, asset quantity, string memo);
 
    void retire( asset quantity, string memo );
-
    void burn(name owner, asset quantity, string memo);
    void transfer(name from,
                  name to,
@@ -188,9 +188,8 @@ void token::burn(name owner, asset quantity, string memo)
    eosio_assert(sym.is_valid(), "invalid symbol name");
    eosio_assert(memo.size() <= 256, "memo has more than 256 bytes");
 
-   auto sym_name = sym.code().raw();
-   stats statstable(_self, sym_name);
-   auto existing = statstable.find(sym_name);
+   stats statstable(_self, sym.code().raw());
+   auto existing = statstable.find(sym.code().raw());
    eosio_assert(existing != statstable.end(), "token with symbol does not exist, create token before issue");
    const auto &st = *existing;
 
