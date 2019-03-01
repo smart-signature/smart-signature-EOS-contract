@@ -1,5 +1,5 @@
 {
-    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT Wed Feb 27 22:04:08 2019",
+    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT Fri Mar  1 19:40:50 2019",
     "version": "eosio::abi/1.1",
     "structs": [
         {
@@ -9,6 +9,32 @@
                 {
                     "name": "from",
                     "type": "name"
+                }
+            ]
+        },
+        {
+            "name": "good_info",
+            "base": "",
+            "fields": [
+                {
+                    "name": "id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "seller",
+                    "type": "name"
+                },
+                {
+                    "name": "price",
+                    "type": "asset"
+                },
+                {
+                    "name": "minimum_purchase_quantity",
+                    "type": "uint64"
+                },
+                {
+                    "name": "fission_factor",
+                    "type": "uint64"
                 }
             ]
         },
@@ -41,6 +67,24 @@
                 },
                 {
                     "name": "fission_factor",
+                    "type": "uint64"
+                }
+            ]
+        },
+        {
+            "name": "recselling",
+            "base": "",
+            "fields": [
+                {
+                    "name": "good_id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "buyer",
+                    "type": "name"
+                },
+                {
+                    "name": "quantity",
                     "type": "uint64"
                 }
             ]
@@ -102,9 +146,21 @@
             "name": "publish",
             "type": "publish",
             "ricardian_contract": ""
+        },
+        {
+            "name": "recselling",
+            "type": "recselling",
+            "ricardian_contract": ""
         }
     ],
     "tables": [
+        {
+            "name": "goods",
+            "type": "good_info",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
         {
             "name": "players",
             "type": "player_info",

@@ -85,6 +85,31 @@ void sign::share(name from, asset in, const vector<string> &params)
 }
 
 /**
+    賣key
+
+    @param buyer 買家
+    @param in 付的錢
+    @param params good ID
+*/
+void sign::key_selling(const name buyer, asset in, const vector<string> &params)
+{
+    require_auth(buyer);
+    eosio_assert(in.amount >= 1, "you need at least 0.0001 EOS to buy a game-key"); // 最小購買金額 0.1 EOS
+    eosio_assert(params.size() >= 1, "No ID found..");
+    
+    index_good_t goods(_self, _self.value);
+    
+    uint64_t id = string_to_int(params[1]);
+    auto good = goods.require_find(id, "this good is not exist");
+
+    const int64_t times = in / good->price; // asset / asset
+    eosio_assert(times > 0, "You have wrong cost." );
+    eosio_assert(times <= good->minimum_purchase_quantity, "You buy too much");
+
+    SEND_INLINE_ACTION(*this, recselling, { _self, "active"_n }, { good->id, buyer, times });
+}
+
+/**
     提现
 
     @param from 发起者
@@ -136,4 +161,11 @@ void sign::onTransfer(name from, name to, asset in, string memo)
         share(from, in, params);
         return;
     }
+
+    if (params[0] == "buy_key")
+    {
+        key_selling(from, in, params);
+        return;
+    }
+
 }
