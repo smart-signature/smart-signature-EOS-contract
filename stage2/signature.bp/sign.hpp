@@ -22,7 +22,7 @@ typedef uint64_t time;
 
 CONTRACT sign : virtual public eosio::contract, public kyubey
 {
-  public:
+public:
     sign(name receiver, name code, datastream<const char *> ds) : 
         contract(receiver, code, ds),
         kyubey(receiver, code, ds),
@@ -68,10 +68,35 @@ CONTRACT sign : virtual public eosio::contract, public kyubey
     ACTION claim(name from);
 
     // Token management by token issueer player
-    ACTION issue(name to, asset quantity, string memo) {
-        // _contract_kyubey.issue(to, quantity, memo);
-        // _contract_dividend.stake(to, quantity);
+    /*
+     * @auth: in token::create using require_auth(_self);
+    */
+    ACTION tcreate(name issuer, asset maximum_supply) {
+        token::create(issuer, maximum_supply);
     }
+
+    /*
+     * @auth: in token::issue using require_auth(st.issuer);
+    */    
+    ACTION tissue(name to, asset quantity, string memo) {
+        token::issue(to, quantity, memo);
+    }
+
+private:
+    /* Using by onTransfer */
+    void token_buy(name account, asset in) {
+        kyubey::buy(account, in);
+    }
+ 
+public:
+    /*
+     * @auth: in tsell using require_auth(account);
+    */
+    ACTION tsell(name account, asset in) {
+        require_auth(account);
+        kyubey::sell(account, in);
+    }
+
     ACTION transfer(name from, name to, asset quantity, string memo) {
         require_auth(from);
         // nft::transfer<sign_index_t>( {_self,_self.value}, from, to, id, memo );
