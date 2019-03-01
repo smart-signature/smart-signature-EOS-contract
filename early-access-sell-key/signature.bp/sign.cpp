@@ -34,6 +34,28 @@ void sign::publish(name from, uint64_t fission_factor)
 }
 
 /**
+    创建一个good
+
+    @param seller 賣家
+    @param params 裂变系数
+*/    
+void sign::publishgood(name seller, asset price, uint64_t minimum_purchase_quantity, uint64_t fission_factor)
+{
+    require_auth(seller);
+    eosio_assert(1000 <= fission_factor && fission_factor <= 2000, "illegal fission_factor");
+
+    index_good_t goods(_self, _self.value);
+    auto id = goods.available_primary_key();
+    goods.emplace(_self, [&](auto &g) {
+        g.id = id;
+        g.seller = seller;
+        g.price = price;
+        g.minimum_purchase_quantity = minimum_purchase_quantity;
+        g.fission_factor = fission_factor;
+    });
+}
+
+/**
     创建一次分享
 
     @param from 读者

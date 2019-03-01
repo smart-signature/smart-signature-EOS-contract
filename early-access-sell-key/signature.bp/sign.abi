@@ -1,5 +1,5 @@
 {
-    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT Fri Mar  1 19:40:50 2019",
+    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT Fri Mar  1 19:46:29 2019",
     "version": "eosio::abi/1.1",
     "structs": [
         {
@@ -64,6 +64,28 @@
                 {
                     "name": "from",
                     "type": "name"
+                },
+                {
+                    "name": "fission_factor",
+                    "type": "uint64"
+                }
+            ]
+        },
+        {
+            "name": "publishgood",
+            "base": "",
+            "fields": [
+                {
+                    "name": "seller",
+                    "type": "name"
+                },
+                {
+                    "name": "price",
+                    "type": "asset"
+                },
+                {
+                    "name": "minimum_purchase_quantity",
+                    "type": "uint64"
                 },
                 {
                     "name": "fission_factor",
@@ -145,6 +167,11 @@
         {
             "name": "publish",
             "type": "publish",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "publishgood",
+            "type": "publishgood",
             "ricardian_contract": ""
         },
         {

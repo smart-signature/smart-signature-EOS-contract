@@ -78,6 +78,8 @@ CONTRACT sign : public eosio::contract
     ACTION publish(name from, uint64_t fission_factor);
     ACTION claim(name from);
 
+    ACTION publishgood(name seller, asset price, uint64_t minimum_purchase_quantity, uint64_t fission_factor);
+
     // Rec
     ACTION recselling( const uint64_t &good_id, const name &buyer, const uint64_t &quantity ) {
         require_auth(_self);
@@ -105,6 +107,7 @@ CONTRACT sign : public eosio::contract
                 (init)
                 (publish)
                 (claim)
+                (publishgood)
                 (recselling)
             )
         }
