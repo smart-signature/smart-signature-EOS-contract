@@ -123,8 +123,8 @@ void sign::selling(const name buyer, asset in, const vector<string> &params)
     eosio_assert(in.amount >= 1, "you need at least 0.0001 EOS to buy a game-key"); // 最小購買金額 0.1 EOS
     eosio_assert(params.size() >= 1, "No ID found..");
     
-    uint64_t type = string_to_int(params[1]);
-    auto good = _goods.require_find(type, "this good is not exist");
+    uint64_t good_id = string_to_int(params[1]);
+    auto good = _goods.require_find(good_id, "this good is not exist");
 
     const int64_t times = in.amount / good->price; // asset / asset
     eosio_assert(times > 0, "You have wrong cost." );
@@ -134,7 +134,7 @@ void sign::selling(const name buyer, asset in, const vector<string> &params)
     auto _id = _orders.available_primary_key();
     _orders.emplace(_self, [&](auto &o) {
         o.id = _id;
-        o.type = type;
+        o.good_id = good_id;
         o.count = times;
         o.buyer = buyer;
     });
@@ -144,12 +144,16 @@ void sign::selling(const name buyer, asset in, const vector<string> &params)
 
 void sign::rmorder(const uint64_t id)
 {
+    require_auth(_self);
     auto order = _orders.require_find(id, "thiss order is not exist");
 
     singleton_players_t _player(_self, order->buyer.value);
     auto p = _player.get_or_create(_self, player_info{});
 
-    auto good = _goods.require_find(order->type, "this good is not exist");
+    auto good = _goods.require_find(order->good_id, "this good is not exist");
+
+    _orders.erase(order);
+
     p.share_income += order->count * good->referral_bonus;
     _player.set(p, _self);
 }

@@ -64,7 +64,7 @@ CONTRACT sign : public eosio::contract
     struct[[eosio::table("orders")]] order_info
     {
         uint64_t id;
-        uint64_t type;  // 商品
+        uint64_t good_id;  // 商品, good_id
         uint64_t count; // 数量
         name buyer;     // 买家
         uint64_t primary_key()const { return id; }
@@ -126,8 +126,8 @@ CONTRACT sign : public eosio::contract
                 (publish)
                 (claim)
                 (publishgood)
-                (recselling)
                 (rmorder)
+                (recselling)
             )
         }
     }
