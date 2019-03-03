@@ -118,7 +118,7 @@ void sign::share(name from, asset in, const vector<string> &params)
 
     @param buyer 買家
     @param in 付的錢
-    @param params good ID
+    @param params 商品编号，推荐人编号
 */
 // from onTransfer
 void sign::selling(const name &buyer, asset in, const vector<string> &params)
@@ -159,6 +159,11 @@ void sign::add_share_income(const name &referrer, const asset &quantity){
     _player.set(p, _self);
 }
 
+/**
+    执行并删除订单
+
+    @param id 订单编号
+*/
 void sign::rmorder(const uint64_t id)
 {
     require_auth(_self);
