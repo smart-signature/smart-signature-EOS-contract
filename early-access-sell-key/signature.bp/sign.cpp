@@ -115,7 +115,7 @@ void sign::share(name from, asset in, const vector<string> &params)
 
     @param buyer 買家
     @param in 付的錢
-    @param params good ID
+    @param params 商品编号，推荐人编号
 */
 void sign::selling(const name buyer, asset in, const vector<string> &params)
 {
@@ -142,20 +142,21 @@ void sign::selling(const name buyer, asset in, const vector<string> &params)
     SEND_INLINE_ACTION(*this, recselling, { _self, "active"_n }, { good->id, buyer, times });
 }
 
+/**
+    执行并删除订单
+
+    @param id 订单编号
+*/
 void sign::rmorder(const uint64_t id)
 {
     require_auth(_self);
     auto order = _orders.require_find(id, "thiss order is not exist");
-
+    auto good = _goods.require_find(order->good_id, "this good is not exist");
     singleton_players_t _player(_self, order->buyer.value);
     auto p = _player.get_or_create(_self, player_info{});
-
-    auto good = _goods.require_find(order->good_id, "this good is not exist");
-
-    _orders.erase(order);
-
     p.share_income += order->count * good->referral_bonus;
     _player.set(p, _self);
+    _orders.erase(order);    
 }
 
 /**
