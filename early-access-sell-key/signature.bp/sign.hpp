@@ -67,7 +67,7 @@ CONTRACT sign : public eosio::contract
         uint64_t good_id;  // 商品, good_id
         uint64_t count; // 数量
         name buyer;     // 买家
-        name refer;     // 
+        name refer;     // 推荐人
         uint64_t primary_key()const { return id; }
     };
 
