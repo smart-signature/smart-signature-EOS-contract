@@ -34,12 +34,15 @@ void sign::publish(name from, uint64_t fission_factor)
 }
 
 /**
-    创建一个good
+    创建一个商品
 
     @param seller 賣家
-    @param params 裂变系数
+    @param price 价格
+    @param referral_bonus 推荐返利
+    @param fission_bonus  裂变返利
+    @param fission_factor 裂变洗漱
 */    
-void sign::publishgood(name seller, asset price, uint64_t minimum_purchase_quantity, uint64_t fission_factor)
+void sign::publishgood(name seller, uint64_t price, uint64_t referral_bonus, uint64_t fission_bonus, uint64_t fission_factor)
 {
     require_auth(seller);
     eosio_assert(1000 <= fission_factor && fission_factor <= 2000, "illegal fission_factor");
@@ -50,7 +53,8 @@ void sign::publishgood(name seller, asset price, uint64_t minimum_purchase_quant
         g.id = id;
         g.seller = seller;
         g.price = price;
-        g.minimum_purchase_quantity = minimum_purchase_quantity;
+        g.referral_bonus = referral_bonus;
+        g.fission_bonus = fission_bonus;
         g.fission_factor = fission_factor;
     });
 }
@@ -107,28 +111,39 @@ void sign::share(name from, asset in, const vector<string> &params)
 }
 
 /**
-    賣key
+    賣货
 
     @param buyer 買家
     @param in 付的錢
     @param params good ID
 */
-void sign::key_selling(const name buyer, asset in, const vector<string> &params)
+void sign::selling(const name buyer, asset in, const vector<string> &params)
 {
     require_auth(buyer);
     eosio_assert(in.amount >= 1, "you need at least 0.0001 EOS to buy a game-key"); // 最小購買金額 0.1 EOS
     eosio_assert(params.size() >= 1, "No ID found..");
     
-    index_good_t goods(_self, _self.value);
-    
-    uint64_t id = string_to_int(params[1]);
-    auto good = goods.require_find(id, "this good is not exist");
+    uint64_t type = string_to_int(params[1]);
+    auto good = _goods.require_find(type, "this good is not exist");
 
-    const int64_t times = in / good->price; // asset / asset
+    const int64_t times = in.amount / good->price; // asset / asset
     eosio_assert(times > 0, "You have wrong cost." );
-    eosio_assert(times <= good->minimum_purchase_quantity, "You buy too much");
+    eosio_assert(times * good->price == in.amount, "You must buy integer number of goods." );
+
+    // 写入订单表格
+    auto _id = _orders.available_primary_key();
+    _orders.emplace(_self, [&](auto &o) {
+        o.id = _id;
+        o.type = type;
+        o.count = times;
+        o.buyer = buyer;
+    });
 
     SEND_INLINE_ACTION(*this, recselling, { _self, "active"_n }, { good->id, buyer, times });
+}
+
+void sign::rmorder(const uint64_t id)
+{
 }
 
 /**
@@ -184,10 +199,9 @@ void sign::onTransfer(name from, name to, asset in, string memo)
         return;
     }
 
-    if (params[0] == "buy_key")
+    if (params[0] == "buy")
     {
-        key_selling(from, in, params);
+        selling(from, in, params);
         return;
     }
-
 }

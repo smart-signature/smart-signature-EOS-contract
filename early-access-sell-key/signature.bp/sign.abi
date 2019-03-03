@@ -1,5 +1,5 @@
 {
-    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT Fri Mar  1 19:46:29 2019",
+    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT Sun Mar  3 10:59:23 2019",
     "version": "eosio::abi/1.1",
     "structs": [
         {
@@ -26,10 +26,14 @@
                 },
                 {
                     "name": "price",
-                    "type": "asset"
+                    "type": "uint64"
                 },
                 {
-                    "name": "minimum_purchase_quantity",
+                    "name": "referral_bonus",
+                    "type": "uint64"
+                },
+                {
+                    "name": "fission_bonus",
                     "type": "uint64"
                 },
                 {
@@ -42,6 +46,28 @@
             "name": "init",
             "base": "",
             "fields": []
+        },
+        {
+            "name": "order_info",
+            "base": "",
+            "fields": [
+                {
+                    "name": "id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "type",
+                    "type": "uint64"
+                },
+                {
+                    "name": "count",
+                    "type": "uint64"
+                },
+                {
+                    "name": "buyer",
+                    "type": "name"
+                }
+            ]
         },
         {
             "name": "player_info",
@@ -81,10 +107,14 @@
                 },
                 {
                     "name": "price",
-                    "type": "asset"
+                    "type": "uint64"
                 },
                 {
-                    "name": "minimum_purchase_quantity",
+                    "name": "referral_bonus",
+                    "type": "uint64"
+                },
+                {
+                    "name": "fission_bonus",
                     "type": "uint64"
                 },
                 {
@@ -107,6 +137,16 @@
                 },
                 {
                     "name": "quantity",
+                    "type": "uint64"
+                }
+            ]
+        },
+        {
+            "name": "rmorder",
+            "base": "",
+            "fields": [
+                {
+                    "name": "id",
                     "type": "uint64"
                 }
             ]
@@ -178,12 +218,24 @@
             "name": "recselling",
             "type": "recselling",
             "ricardian_contract": ""
+        },
+        {
+            "name": "rmorder",
+            "type": "rmorder",
+            "ricardian_contract": ""
         }
     ],
     "tables": [
         {
             "name": "goods",
             "type": "good_info",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "orders",
+            "type": "order_info",
             "index_type": "i64",
             "key_names": [],
             "key_types": []

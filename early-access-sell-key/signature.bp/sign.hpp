@@ -24,7 +24,9 @@ CONTRACT sign : public eosio::contract
     sign(name receiver, name code, datastream<const char *> ds) : 
         contract(receiver, code, ds),
         _signs(receiver, receiver.value),
-        _shares(receiver, receiver.value) {}
+        _shares(receiver, receiver.value),
+        _goods(receiver, receiver.value),
+        _orders(receiver, receiver.value) {}
 
     // 用户表格，记录收入
     // @param scope 为用户账户
@@ -44,15 +46,27 @@ CONTRACT sign : public eosio::contract
         uint64_t primary_key()const { return id; }
     };
 
-    // goods表格，全局
+    // 商品表格，全局
     // @param scope 为此合约 
     struct[[eosio::table("goods")]] good_info
     {
         uint64_t id;
         name seller; // 賣家
-        asset price; // 一份的價格
-        uint64_t minimum_purchase_quantity; // n
+        uint64_t price; // 一份的價格
+        uint64_t referral_bonus; // 推荐返利
+        uint64_t fission_bonus;  // 裂变返利
         uint64_t fission_factor; // 裂变系数 * 1000
+        uint64_t primary_key()const { return id; }
+    };
+
+    // 订单表格，全局
+    // @param scope 为此合约 
+    struct[[eosio::table("orders")]] order_info
+    {
+        uint64_t id;
+        uint64_t type;  // 商品
+        uint64_t count; // 数量
+        name buyer;     // 买家
         uint64_t primary_key()const { return id; }
     };
 
@@ -71,21 +85,25 @@ CONTRACT sign : public eosio::contract
     typedef eosio::multi_index<"signs"_n, sign_info> index_sign_t;
     typedef eosio::multi_index<"shares"_n, share_info> index_share_t;
     typedef eosio::multi_index<"goods"_n, good_info> index_good_t;
+    typedef eosio::multi_index<"orders"_n, order_info> index_order_t;    
     index_sign_t _signs;
     index_share_t _shares;
+    index_good_t _goods;
+    index_order_t _orders;
     
     ACTION init();
     ACTION publish(name from, uint64_t fission_factor);
     ACTION claim(name from);
 
-    ACTION publishgood(name seller, asset price, uint64_t minimum_purchase_quantity, uint64_t fission_factor);
+    ACTION publishgood(name seller, uint64_t price, uint64_t referral_bonus, uint64_t fission_bonus, uint64_t fission_factor);
+    ACTION rmorder(uint64_t id);
 
-    // Rec
+    // Log
     ACTION recselling( const uint64_t &good_id, const name &buyer, const uint64_t &quantity ) {
         require_auth(_self);
     }
 
-    void key_selling(const name buyer, asset in, const vector<string> &params);
+    void selling(const name buyer, asset in, const vector<string> &params);
     void onTransfer(name from, name to,
                     asset in, string memo);
     void share(name from, asset in, const vector<string>& params);
@@ -109,6 +127,7 @@ CONTRACT sign : public eosio::contract
                 (claim)
                 (publishgood)
                 (recselling)
+                (rmorder)
             )
         }
     }
