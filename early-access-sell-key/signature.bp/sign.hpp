@@ -6,7 +6,7 @@
 #include <eosiolib/eosio.hpp>
 #include <eosiolib/asset.hpp>
 #include <eosiolib/singleton.hpp>
-#include <eosiolib/transaction.hpp>
+// include <eosiolib/transaction.hpp>
 
 #include "config.hpp"
 #include "utils.hpp"
@@ -67,6 +67,7 @@ CONTRACT sign : public eosio::contract
         uint64_t good_id;  // 商品, good_id
         uint64_t count; // 数量
         name buyer;     // 买家
+        name refer;     // 
         uint64_t primary_key()const { return id; }
     };
 
@@ -103,11 +104,14 @@ CONTRACT sign : public eosio::contract
         require_auth(_self);
     }
 
-    void selling(const name buyer, asset in, const vector<string> &params);
+private:
+    void add_share_income(const name &referrer, const asset &quantity);
+    void selling(const name &buyer, asset in, const vector<string> &params);
     void onTransfer(name from, name to,
                     asset in, string memo);
     void share(name from, asset in, const vector<string>& params);
 
+  public:
     void apply(uint64_t receiver, uint64_t code, uint64_t action)
     {
         auto &thiscontract = *this;

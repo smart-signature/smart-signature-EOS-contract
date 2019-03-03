@@ -89,16 +89,19 @@ void sign::share(name from, asset in, const vector<string> &params)
     {
         auto upstream_share_id = string_to_int(params[2]);
         auto upstream_share = _shares.find(upstream_share_id);
+        // 找不到沒做處理
         if (upstream_share != _shares.end())
         {
-            auto delta = upstream_share->quota < in.amount ? upstream_share->quota : in.amount;
+            int64_t delta = upstream_share->quota < in.amount ? upstream_share->quota : in.amount;
             _shares.modify(upstream_share, _self, [&](auto &s) {
                 s.quota -= delta;
             });
+
             singleton_players_t _player(_self, upstream_share->reader.value);
             auto p = _player.get_or_create(_self, player_info{});
             p.share_income += delta;
             _player.set(p, _self);
+
             in.amount -= delta;
         }
     }
@@ -117,9 +120,12 @@ void sign::share(name from, asset in, const vector<string> &params)
     @param in 付的錢
     @param params good ID
 */
-void sign::selling(const name buyer, asset in, const vector<string> &params)
+// from onTransfer
+void sign::selling(const name &buyer, asset in, const vector<string> &params)
 {
     require_auth(buyer);
+
+    // 理論上，未來可能不只用 EOS，可能用穩定幣系 ，這邊還需要擴寫
     eosio_assert(in.amount >= 1, "you need at least 0.0001 EOS to buy a game-key"); // 最小購買金額 0.1 EOS
     eosio_assert(params.size() >= 1, "No ID found..");
     
@@ -142,41 +148,50 @@ void sign::selling(const name buyer, asset in, const vector<string> &params)
     SEND_INLINE_ACTION(*this, recselling, { _self, "active"_n }, { good->id, buyer, times });
 }
 
+// 為什麼用 asset ，因為 asset 內含 overflow 檢查機制
+void sign::add_share_income(const name &referrer, const asset &quantity){
+    singleton_players_t _player(_self, referrer.value);
+    // 經驗談:
+    // 不該 or_create ，但不這麼做，哪天哪個點會找不到 player 而炸
+    // 需要一套方案，目前維持現狀
+    auto p = _player.get_or_create(_self, player_info{});
+    p.share_income += quantity.amount;
+    _player.set(p, _self);
+}
+
 void sign::rmorder(const uint64_t id)
 {
     require_auth(_self);
     auto order = _orders.require_find(id, "thiss order is not exist");
-
-    singleton_players_t _player(_self, order->buyer.value);
-    auto p = _player.get_or_create(_self, player_info{});
-
     auto good = _goods.require_find(order->good_id, "this good is not exist");
 
-    _orders.erase(order);
+    // 給 referrer
+    add_share_income( order->refer, asset{ static_cast<int64_t>(order->count * good->referral_bonus), EOS_SYMBOL});
 
-    p.share_income += order->count * good->referral_bonus;
-    _player.set(p, _self);
+    // 最後，刪訂單
+    _orders.erase(order);
 }
 
 /**
     提现
 
-    @param from 发起者
+    @param from 不是发起者，是申請需claim的帳號。發起者可以跟後者不同的，要注意
 */
 void sign::claim(name from)
 {
     require_auth(from);
+    
     singleton_players_t _player(_self, from.value);
     auto p = _player.get_or_create(_self, player_info{});
-    uint64_t income = p.sign_income + p.share_income;
+    int64_t income = p.sign_income + p.share_income;
     eosio_assert(income == 0, "nothing to claim");
 
     action(
         permission_level{_self, "active"_n},
         EOS_CONTRACT, "transfer"_n,
-        make_tuple(_self, from, asset(income, EOS_SYMBOL),
-                   string("claim sign income & share income.")))
-        .send();
+        make_tuple(_self, from, asset{income, EOS_SYMBOL},
+                   string{"claim sign income & share income."}))
+    .send();
 
     p.sign_income = 0;
     p.share_income = 0;
@@ -193,8 +208,7 @@ void sign::claim(name from)
 */
 void sign::onTransfer(name from, name to, asset in, string memo)
 {
-    if (to != _self)
-        return;
+    if (to != _self) return;
     require_auth(from);
 
     eosio_assert(_code == EOS_CONTRACT, "code is not eosio.token, only true EOS token is allowed");
@@ -210,7 +224,6 @@ void sign::onTransfer(name from, name to, asset in, string memo)
         share(from, in, params);
         return;
     }
-
     if (params[0] == "buy")
     {
         selling(from, in, params);
