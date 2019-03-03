@@ -144,6 +144,14 @@ void sign::selling(const name buyer, asset in, const vector<string> &params)
 
 void sign::rmorder(const uint64_t id)
 {
+    auto order = _orders.require_find(id, "thiss order is not exist");
+
+    singleton_players_t _player(_self, order->buyer.value);
+    auto p = _player.get_or_create(_self, player_info{});
+
+    auto good = _goods.require_find(order->type, "this good is not exist");
+    p.share_income += order->count * good->referral_bonus;
+    _player.set(p, _self);
 }
 
 /**
