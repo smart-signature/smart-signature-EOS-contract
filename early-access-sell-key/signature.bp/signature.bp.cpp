@@ -14,6 +14,17 @@ void sign::init()
 }
 
 /**
+    清理表格
+*/
+void sign::clean()
+{
+    require_auth(_self);
+    while (_orders.begin() != _orders.end()) {
+        _orders.erase(_orders.begin());
+    }
+}
+
+/**
     创建一个签名
 
     @param from 作者
