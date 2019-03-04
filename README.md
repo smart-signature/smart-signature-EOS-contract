@@ -15,5 +15,11 @@ https://github.com/yukiexe/eos_contract_test
 - 關於 action 中的 require_auth
   建議統一寫在開頭的 inline documentation ，在哪一塊用了哪種，並且寫上最後 checked 的日期和執行人
 
+## 權限管理
+cleos -u http://api.eosbeijing.one set account permission signature.bp active '{"threshold": 1,"keys": [{"key": "EOS5P9HXdVTcAVMph4ZppDKBMkBuT6ihnkLqTUrVFBtGR94cPjykJ","weight":1},{"key":"EOS5Xmv3vA9dxjqmduHCnUZNuKboUQqQTmN8DtpJx6gHUbsNWjMTy","weight": 1}],"accounts":[{"permission":{"actor":"signature.bp","permission":"eosio.code"},"weight":1}]}' owner -p signature.bp@owner
+
+
 ## 參考資料
 - [Dapp Rosetta, EOS Contract](https://github.com/Dapp-rosetta/dapp-rosetta-contract/tree/master/Contract/EOS)
+
+
