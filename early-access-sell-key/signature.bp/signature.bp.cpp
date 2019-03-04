@@ -162,7 +162,7 @@ void sign::add_share_income(const name &referrer, const asset &quantity){
 */
 void sign::rmorder(const uint64_t id)
 {
-    require_auth(_self);
+    // require_auth(_self);
     auto order = _orders.require_find(id, "thiss order is not exist");
     auto good = _goods.require_find(order->good_id, "this good is not exist");
 

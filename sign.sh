@@ -1,31 +1,20 @@
 cleos wallet unlock -n www --password PW5JDQJvz73w73eNEtthCRhLn9gieFki5uiZu1JZdjwMftVA3f4cG
 
-cleos -u https://api-kylin.eosasia.one set contract signaturebp2 ./early-access-sell-key/sign -p signaturebp2@active
+cleos -u https://api-kylin.eosasia.one set contract signaturebp2 ./early-access-sell-key/signature.bp -p signaturebp2@active
 
 cleos -u https://api-kylin.eosasia.one push action signaturebp2 publishgood '[ "signaturebp2", "1", "2000", "2000", "2000" ]' -p signaturebp2@active
 
+cleos -u https://api-kylin.eosasia.one push action signaturebp2 rmorder '["0"]' -p signaturebp2@active
+
 
 #cleos -u https://api-kylin.eosasia.one get table signaturebp2 signaturebp2 goods
-#cleos -u https://api-kylin.eosasia.one get table ccctest22222 cccmining555 accounts
-#cleos -u https://api-kylin.eosasia.one get table ccctest22222 ccctest22222 player
-#cleos -u https://api-kylin.eosasia.one get table ccctest22222 ccctest22222 usedcoins
-#cleos -u https://api-kylin.eosasia.one get table ccctest22222 ccctest22222 miningqueue
-#cleos -u https://api-kylin.eosasia.one get table ccctest22222 ccctest22222 dividend
-
+#cleos -u https://api-kylin.eosasia.one get table signaturebp2 signaturebp2 orders
 
 
 cleos --wallet-url http://127.0.0.1:8900 -u https://api-kylin.eosasia.one set contract ccctest22222 /mnt/d/ruka/Documents/github/cryptocoin-contracts/EOS/cryptojinian -p ccctest22222@active
 
 https://kylin.eoscanada.com/
 cleos -u https://api-kylin.eosasia.one push action ccctest22222 pushorder '["cccmining555","1.0000 EOS","1 1 3" ]' -p cccmining555@active
-#cleos -u https://api-kylin.eosasia.one get table ccctest22222 ccctest22222 accounts
-#cleos -u https://api-kylin.eosasia.one get table ccctest22222 cccmining555 accounts
-#cleos -u https://api-kylin.eosasia.one get table ccctest22222 ccctest22222 player
-#cleos -u https://api-kylin.eosasia.one get table ccctest22222 ccctest22222 usedcoins
-#cleos -u https://api-kylin.eosasia.one get table ccctest22222 ccctest22222 miningqueue
-#cleos -u https://api-kylin.eosasia.one get table ccctest22222 ccctest22222 dividend
-#cleos -u https://api-kylin.eosasia.one get table ccctest22222 ccctest22222 order
-#cleos -u https://api-kylin.eosasia.one get table ccctest22222 ccctest22222 coin
 
 
 cleos get table contract contract accounts
@@ -55,17 +44,9 @@ cleos -u https://api-kylin.eosasia.one push action ccctest22222 joinbuybackq '[ 
 cleos -u https://api-kylin.eosasia.one push action ccctest22222 ownersetcoin '[ "cccmining555","301","11"]' -p ccctest22222@active
 
 
-cleos -u https://api-kylin.eosasia.one get table ccctest22222 ccctest22222 buybackqueue
-
-cleos -u http://api-direct.eosasia.one get table chainbankeos chainbankeos buybackqueue
-
-cleos -u http://api-direct.eosasia.one get table chainbankeos chainbankeos order
-
-
 cleos -u http://api-direct.eosasia.one push action eosio.token transfer '["rukamoemoe51", "chainbankeos", "0.0001 EOS", "take_order 3000001"]' -p rukamoemoe51@active
 
 
-#cleos -u http://api-direct.eosasia.one get table eosio minakokojima delband
 #cleos -u http://api-direct.eosasia.one set account permission cryptomeetup active '{"threshold": 1,"keys": [{"key": "EOS5x2vQgnAfvn6571VUFu43xVHTWzoysuQ875npKacf7YJqDKF8H","weight": 1}],"accounts": [{"permission":{"actor":"cryptomeetup","permission":"eosio.code"},"weight":1}]}' owner -p cryptomeetup
 #/usr/local/eosio/bin/eosiocpp -g cryptomeetup/cryptomeetup.abi  cryptomeetup/cryptomeetup.cpp
 #/usr/local/eosio/bin/eosiocpp -o cryptomeetup/cryptomeetup.wast cryptomeetup/cryptomeetup.cpp
@@ -91,12 +72,6 @@ cleos -u http://api-direct.eosasia.one push action eosio.token transfer '["rukam
 
 #cleos -u http://api.eosbeijing.one push action cryptomeetup newbag '[ "cryptomeetup", "0.0100 EOS" ]' -p cryptomeetup@active cryptomeetup@active
 
-
-
-#cleos -u http://api.eosbeijing.one get table cryptomeetup cryptomeetup bag
-#cleos -u http://api.eosbeijing.one get table cryptomeetup cryptomeetup bagsglobal
-
-#cleos -u http://api-direct.eosasia.one push action cryptomeetup init '[]' -p cryptomeetup@active
 
 
 #cleos -u http://api.eosbeijing.one push action cryptomeetup init '["0196d5b5d9ec1bc78ba927d2db2cb327d836f002601c77bd8c3f144a07ddc737"]' -p cryptomeetup@active
@@ -160,10 +135,6 @@ cleos -u http://api-direct.eosasia.one push action eosio.token transfer '["rukam
 
 #cleos -u http://api-direct.eosasia.one push action eosio.token transfer '[ "minakokojima", "cryptomeetup", "0.0010 EOS", "0.0010 PXL" ]' -p minakokojima@active
 
-#cleos -u http://api-direct.eosasia.one push action dacincubator transfer '[ "eosotcbackup", "cryptomeetup", "0.0010 PXL", "0.0010 EOS" ]' -p eosotcbackup@active
-
-#cleos -u http://api-direct.eosasia.one push action eosio.token transfer '[ "minakokojima", "cryptomeetup", "0.0100 EOS", "0.0100 PUB" ]' -p minakokojima@active
-
 
 
 #cleos -u http://api-direct.eosasia.one push action eosio.token transfer '[ "minakokojima", "kyubeydex.bp", "0.0100 EOS", "0.0100 KBY" ]' -p minakokojima@active
@@ -177,16 +148,5 @@ cleos -u http://api-direct.eosasia.one push action eosio.token transfer '["rukam
 
 #cleos -u http://api-direct.eosasia.one get table cryptomeetup cryptomeetup buyorder
 
-# cleos -u https://api-kylin.eosasia.one push action pomelodex111 test '[]' -p minakokojima@active
-
-
-# cleos -u https://api-kylin.eosasia.one set contract pomelodex111 pomelo -p pomelodex111@active
-# cleos -u https://api-kylin.eosasia.one push action eosio.token transfer '[ "minakokojima", "pomelodex111", "1.0000 EOS", "buy,happyeosslot,HPY,2.0000" ]' -p minakokojima@active
-# cleos -u https://api-kylin.eosasia.one set contract pomelodex111 pomelo -p pomelodex111@active
-# cleos -u https://api-kylin.eosasia.one push action eosio.token transfer '[ "minakokojima", "happyeosslot", "1.0000 EOS", "buy" ]' -p minakokojima@active
-
-# cleos -u https://api-kylin.eosasia.one push action eosio.token transfer '[ "minakokojima", "pomelodex111", "1.0000 EOS", "buy,happyeosslot,HPY,2.0000" ]' -p minakokojima@active
-# cleos -u https://api-kylin.eosasia.one set contract pomelodex111 pomelo -p pomelodex111@active
-# cleos -u https://api-kylin.eosasia.one system newaccount --stake-net '5.0000 EOS' --stake-cpu '1.0000 EOS' --buy-ram '20.0000 EOS' minakokojima pomelodex111 EOS5fY2dmpfXmzXN1DEJ6VfvhhCr55ZpE9MyTd9eX7Cw2EmzJcnFM EOS781pFN6TgUkuCDqmCdyxcp1cnJdtg3DYfajbAba6mvHvrFNuDy
 
 #cleos wallet import -n www --private-key 
