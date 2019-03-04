@@ -97,7 +97,7 @@ CONTRACT sign : public eosio::contract
     ACTION claim(name from);
 
     ACTION publishgood(name seller, uint64_t price, uint64_t referral_bonus, uint64_t fission_bonus, uint64_t fission_factor);
-    ACTION rmorder(uint64_t id);
+    ACTION rmorder(const uint64_t id);
 
     // Log
     ACTION recselling( const uint64_t &good_id, const name &buyer, const uint64_t &quantity ) {
