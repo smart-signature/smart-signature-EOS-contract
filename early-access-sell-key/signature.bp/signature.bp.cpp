@@ -3,7 +3,7 @@
  *  @copyright Andoromeda
  */
 
-#include "sign.hpp"
+#include "signature.bp.hpp"
 
 /**
     合约初始化
@@ -141,7 +141,7 @@ void sign::selling(const name &buyer, asset in, const vector<string> &params)
         o.buyer = buyer;
     });
 
-    SEND_INLINE_ACTION(*this, recselling, { _self, "active"_n }, { good->id, buyer, times });
+    /* SEND_INLINE_ACTION(*this, recselling, { _self, "active"_n }, { good->id, buyer, times }); */
 }
 
 // 為什麼用 asset ，因為 asset 內含 overflow 檢查機制

@@ -18,7 +18,7 @@ using namespace config;
 
 typedef uint64_t time;
 
-CONTRACT sign : public eosio::contract
+class [[eosio::contract("signature.bp")]] sign : public eosio::contract
 {
   public:
     sign(name receiver, name code, datastream<const char *> ds) : 

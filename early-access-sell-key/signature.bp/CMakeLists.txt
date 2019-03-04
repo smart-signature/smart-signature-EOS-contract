@@ -4,4 +4,4 @@ project(abigen_test_example VERSION 1.0.0)
 find_package(eosio.cdt)
 
 ### generate both the wasm and abi
-add_contract( sign sign sign.cpp )
+add_contract(signature.bp signature.bp signature.bp.cpp)
