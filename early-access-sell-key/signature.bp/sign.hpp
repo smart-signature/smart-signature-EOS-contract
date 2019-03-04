@@ -44,6 +44,7 @@ CONTRACT sign : public eosio::contract
         name author; // 作者
         uint64_t fission_factor; // 裂变系数 * 1000
         uint64_t primary_key()const { return id; }
+        EOSLIB_SERIALIZE(sign_info, (id)(author)(fission_factor))
     };
 
     // 商品表格，全局
@@ -57,6 +58,7 @@ CONTRACT sign : public eosio::contract
         uint64_t fission_bonus;  // 裂变返利
         uint64_t fission_factor; // 裂变系数 * 1000
         uint64_t primary_key()const { return id; }
+        EOSLIB_SERIALIZE(good_info, (id)(seller)(price)(referral_bonus)(fission_bonus)(fission_factor) )
     };
 
     // 订单表格，全局
@@ -69,6 +71,7 @@ CONTRACT sign : public eosio::contract
         name buyer;     // 买家
         name refer;     // 推荐人
         uint64_t primary_key()const { return id; }
+        EOSLIB_SERIALIZE(order_info, (id)(good_id)(count)(buyer)(refer) )
     };
 
     // 分享表格，全局
