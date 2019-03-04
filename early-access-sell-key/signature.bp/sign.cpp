@@ -97,11 +97,7 @@ void sign::share(name from, asset in, const vector<string> &params)
                 s.quota -= delta;
             });
 
-            singleton_players_t _player(_self, upstream_share->reader.value);
-            auto p = _player.get_or_create(_self, player_info{});
-            p.share_income += delta;
-            _player.set(p, _self);
-
+            add_share_income(upstream_share->reader, asset(delta, EOS_SYMBOL));
             in.amount -= delta;
         }
     }
