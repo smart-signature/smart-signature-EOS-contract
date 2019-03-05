@@ -62,7 +62,9 @@ class [[eosio::contract("signature.bp")]] sign : public eosio::contract
     };
 
     // 订单表格，全局
-    // @param scope 为此合约 
+    // scope 為此合约的場合，是一般訂單
+    // scope 為player的場合，是用來記錄該筆 order 裂变返利 所需的data，
+    //                      同時跟 scope 為此合约的同筆data 有所連動
     struct[[eosio::table("orders")]] order_info
     {
         uint64_t id;
@@ -82,14 +84,18 @@ class [[eosio::contract("signature.bp")]] sign : public eosio::contract
         uint64_t target_sign_id;    // 目标签名 id
         name reader;                // 读者
         uint64_t quota;             // 剩余配额  
-        uint64_t primary_key()const { return id; }  
+        uint64_t primary_key()const { return id; }
+        uint64_t get_target_id()const { return target_sign_id; }
     };
 
     typedef singleton<"players"_n, player_info> singleton_players_t;
     typedef eosio::multi_index<"signs"_n, sign_info> index_sign_t;
-    typedef eosio::multi_index<"shares"_n, share_info> index_share_t;
     typedef eosio::multi_index<"goods"_n, good_info> index_good_t;
     typedef eosio::multi_index<"orders"_n, order_info> index_order_t;    
+    // typedef eosio::multi_index<"shares"_n, share_info> index_share_t;
+    typedef eosio::multi_index< "shares"_n, share_info, 
+                                indexed_by<"bytargetid"_n, const_mem_fun<share_info, uint64_t, &share_info::get_target_id> > 
+            > index_share_t;
     index_sign_t _signs;
     index_share_t _shares;
     index_good_t _goods;
@@ -109,7 +115,11 @@ class [[eosio::contract("signature.bp")]] sign : public eosio::contract
 
 private:
     void add_share_income(const name &referrer, const asset &quantity);
+    inline void check_selling(const name &buyer, asset in, const vector<string> &params);
     void selling(const name &buyer, asset in, const vector<string> &params);
+    void superselling(const name &buyer, asset in, const vector<string> &params);
+    void shareselling(const name &buyer, asset in, const vector<string> &params);
+
     void onTransfer(name from, name to,
                     asset in, string memo);
     void share(name from, asset in, const vector<string>& params);
