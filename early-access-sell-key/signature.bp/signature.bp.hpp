@@ -44,7 +44,7 @@ class [[eosio::contract("signature.bp")]] sign : public eosio::contract
         name author; // 作者
         uint64_t fission_factor; // 裂变系数 * 1000
         uint64_t primary_key()const { return id; }
-        EOSLIB_SERIALIZE(sign_info, (id)(author)(fission_factor))
+        // EOSLIB_SERIALIZE(sign_info, (id)(author)(fission_factor))
     };
 
     // 商品表格，全局
@@ -58,7 +58,7 @@ class [[eosio::contract("signature.bp")]] sign : public eosio::contract
         uint64_t fission_bonus;  // 裂变返利
         uint64_t fission_factor; // 裂变系数 * 1000
         uint64_t primary_key()const { return id; }
-        EOSLIB_SERIALIZE(good_info, (id)(seller)(price)(referral_bonus)(fission_bonus)(fission_factor) )
+        // EOSLIB_SERIALIZE(good_info, (id)(seller)(price)(referral_bonus)(fission_bonus)(fission_factor) )
     };
 
     // 订单表格，全局
@@ -86,6 +86,7 @@ class [[eosio::contract("signature.bp")]] sign : public eosio::contract
         uint64_t quota;             // 剩余配额  
         uint64_t primary_key()const { return id; }
         uint64_t get_target_id()const { return target_sign_id; }
+        // EOSLIB_SERIALIZE(order_info, (id)(good_id)(count)(buyer)(refer) )
     };
 
     typedef singleton<"players"_n, player_info> singleton_players_t;
@@ -102,6 +103,7 @@ class [[eosio::contract("signature.bp")]] sign : public eosio::contract
     index_order_t _orders;
     
     ACTION init();
+    ACTION clean();
     ACTION publish(name from, uint64_t fission_factor);
     ACTION claim(name from);
 
@@ -140,6 +142,7 @@ private:
         {
             EOSIO_DISPATCH_HELPER(sign,
                 (init)
+                (clean)
                 (publish)
                 (claim)
                 (publishgood)
