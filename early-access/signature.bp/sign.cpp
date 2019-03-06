@@ -95,7 +95,7 @@ void sign::claim(name from)
     singleton_players_t _player(_self, from.value);
     auto p = _player.get_or_create(_self, player_info{});
     uint64_t income = p.sign_income + p.share_income;
-    eosio_assert(income == 0, "nothing to claim");
+    eosio_assert(income != 0, "nothing to claim");
 
     action(
         permission_level{_self, "active"_n},
