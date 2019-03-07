@@ -11,6 +11,8 @@
 #include "config.hpp"
 #include "util.hpp"
 #include "kyubey.hpp"
+#include "model/Contract/EOS/util/util.hpp"
+#include "model/Contract/EOS/nft/nft.hpp"
 
 using std::string;
 using std::vector;
@@ -80,6 +82,21 @@ public:
     */    
     ACTION tissue(name to, asset quantity, string memo) {
         token::issue(to, quantity, memo);
+    }
+
+    ACTION signtransfer(name from, name to, uint64_t id, string memo) {
+        nft::transfer<sign_index_t>( {_self,_self.value}, from, to, id, memo );
+
+        singleton_players_t players_from( _self, from.value );
+        auto p_from = players_from.get() ;
+        p_from.signs.push_back(id);
+        players_from.set( p_from, _self) ;
+
+        singleton_players_t players_to( _self, to.value );
+        auto p_to = players_to.get() ;
+        
+        p_to.signs.erase( std::find(p_to.signs.begin(), p_to.signs.end(), id) );
+        players_to.set( p_to, _self) ;
     }
 
 private:
