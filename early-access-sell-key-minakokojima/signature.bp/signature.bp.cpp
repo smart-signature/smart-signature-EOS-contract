@@ -158,20 +158,21 @@ void sign::buy(const name &buyer, asset in, const vector<string> &params)
 
     // 处理上游分销商
     if (params.size() >= 2)
-    {
+    {  
         auto upstream_subscribe_id = string_to_int(params[2]);
         auto upstream_subscribe = _subscribes.find(upstream_subscribe_id);
         // 找不到沒做處理
-        if (upstream_upstream_share != _shares.end())
+        if (upstream_subscribe != _subscribes.end())
         {
             int64_t delta = upstream_subscribe->quota < times * good->fission_bonus ? upstream_subscribe->quota : times * good->fission_bonus;
             _subscribes.modify(upstream_subscribe, _self, [&](auto &s) {
                 s.quota -= delta;
             });
 
-            add_share_income(upstream_subscribe->reader, asset(delta, EOS_SYMBOL));
+            add_share_income(upstream_subscribe->subscriber, asset(delta, EOS_SYMBOL));
         }
     }
+
     /* 目前都是官方卖家，所以暂不处理
     // 处理卖家
     singleton_players_t _player(_self, sign->author.value);
@@ -189,10 +190,10 @@ void sign::buy(const name &buyer, asset in, const vector<string> &params)
     @param params 商品编号，推荐人编号
 */
 // from onTransfer
-void sign::subscribe(const name &subscriber, asset in, const vector<string> &params)
+void sign::subscribe(const name &from, asset in, const vector<string> &params)
 {
-    require_auth(subscriber);
-    check_selling(subscriber, in, params);
+    require_auth(from);
+    check_selling(from, in, params);
     
     uint64_t good_id = string_to_int(params[1]);
     auto good = _goods.require_find(good_id, "this good is not exist");
@@ -205,9 +206,9 @@ void sign::subscribe(const name &subscriber, asset in, const vector<string> &par
     auto _id = _subscribes.available_primary_key();
     _subscribes.emplace(_self, [&](auto &s) {
         s.id = _id;
-        s.reader = from;
-        s.target_sign_id = id;
-        s.quota = in.amount * sign->fission_factor / 1000;
+        s.subscriber = from;
+        s.target_goods_id = good_id;
+        s.quota = in.amount * good->fission_factor / 1000;
     });
 
     // 处理上游分销商
@@ -222,9 +223,9 @@ void sign::subscribe(const name &subscriber, asset in, const vector<string> &par
             _subscribes.modify(upstream_subscribe, _self, [&](auto &s) {
                 s.quota -= delta;
             });
-            add_share_income(upstream_subscribe->reader, asset(delta, EOS_SYMBOL));
+            add_share_income(upstream_subscribe->subscriber, asset(delta, EOS_SYMBOL));
         }
-    }    
+    }
 }
 
 // 為什麼用 asset ，因為 asset 內含 overflow 檢查機制

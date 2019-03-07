@@ -27,7 +27,7 @@ class [[eosio::contract("signature.bp")]] sign : public eosio::contract
         _shares(receiver, receiver.value),
         _goods(receiver, receiver.value),
         _orders(receiver, receiver.value),
-        _distributes(receiver, receiver.value) {}
+        _subscribes(receiver, receiver.value) {}
 
     // 用户表格，记录收入
     // @param scope 为用户账户
@@ -91,7 +91,7 @@ class [[eosio::contract("signature.bp")]] sign : public eosio::contract
 
     // 分享表格，全局
     // @param scope 为此合约
-    struct [[eosio::table("distributes")]] distribute_info
+    struct [[eosio::table("subscribes")]] subscribe_info
     {
         uint64_t id;                 // 分享 id
         uint64_t target_goods_id;    // 目标商品 id
@@ -106,13 +106,13 @@ class [[eosio::contract("signature.bp")]] sign : public eosio::contract
     typedef eosio::multi_index<"goods"_n, good_info> index_good_t;
     typedef eosio::multi_index<"orders"_n, order_info> index_order_t;    
     typedef eosio::multi_index<"shares"_n, share_info> index_share_t;
-    typedef eosio::multi_index<"distributes"_n, distribute_info> index_distribute_t;
+    typedef eosio::multi_index<"subscribes"_n, subscribe_info> index_subscribe_t;
 
     index_sign_t _signs;
     index_share_t _shares;
     index_good_t _goods;
     index_order_t _orders;
-    index_distribute_t _distributes;
+    index_subscribe_t _subscribes;
     
     ACTION init();
     ACTION clean();
