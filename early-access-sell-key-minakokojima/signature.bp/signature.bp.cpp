@@ -159,17 +159,17 @@ void sign::buy(const name &buyer, asset in, const vector<string> &params)
     // 处理上游分销商
     if (params.size() >= 2)
     {
-        auto upstream_share_id = string_to_int(params[2]);
-        auto upstream_share = _shares.find(upstream_share_id);
+        auto upstream_subscribe_id = string_to_int(params[2]);
+        auto upstream_subscribe = _subscribes.find(upstream_subscribe_id);
         // 找不到沒做處理
-        if (upstream_share != _shares.end())
+        if (upstream_upstream_share != _shares.end())
         {
-            int64_t delta = upstream_share->quota < times * good->fission_bonus ? upstream_share->quota : times * good->fission_bonus;
-            _shares.modify(upstream_share, _self, [&](auto &s) {
+            int64_t delta = upstream_subscribe->quota < times * good->fission_bonus ? upstream_subscribe->quota : times * good->fission_bonus;
+            _subscribes.modify(upstream_subscribe, _self, [&](auto &s) {
                 s.quota -= delta;
             });
 
-            add_share_income(upstream_share->reader, asset(delta, EOS_SYMBOL));
+            add_share_income(upstream_subscribe->reader, asset(delta, EOS_SYMBOL));
         }
     }
     /* 目前都是官方卖家，所以暂不处理
@@ -201,9 +201,9 @@ void sign::subscribe(const name &subscriber, asset in, const vector<string> &par
     eosio_assert(times > 0, "You have wrong cost." );
     eosio_assert(times * good->price == in.amount, "You must subscribe integer number of goods." );
    
-    // 写入分享表格
-    auto _id = _shares.available_primary_key();
-    _shares.emplace(_self, [&](auto &s) {
+    // 写入订购表格
+    auto _id = _subscribes.available_primary_key();
+    _subscribes.emplace(_self, [&](auto &s) {
         s.id = _id;
         s.reader = from;
         s.target_sign_id = id;
@@ -218,11 +218,11 @@ void sign::subscribe(const name &subscriber, asset in, const vector<string> &par
         // 找不到沒做處理
         if (upstream_subscribe != _subscribes.end())
         {
-            /*int64_t delta = upstream_share->quota < times * good->fission_bonus ? upstream_share->quota : times * good->fission_bonus;
-            _shares.modify(upstream_share, _self, [&](auto &s) {
+            int64_t delta = upstream_subscribe->quota < times * good->fission_bonus ? upstream_subscribe->quota : times * good->fission_bonus;
+            _subscribes.modify(upstream_subscribe, _self, [&](auto &s) {
                 s.quota -= delta;
             });
-            add_share_income(upstream_share->reader, asset(delta, EOS_SYMBOL));*/
+            add_share_income(upstream_subscribe->reader, asset(delta, EOS_SYMBOL));
         }
     }    
 }
