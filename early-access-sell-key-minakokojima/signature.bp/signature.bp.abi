@@ -1,5 +1,5 @@
 {
-    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT Thu Mar  7 15:13:58 2019",
+    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT Thu Mar  7 16:58:00 2019",
     "version": "eosio::abi/1.1",
     "structs": [
         {
@@ -221,6 +221,16 @@
                     "type": "uint64"
                 }
             ]
+        },
+        {
+            "name": "testclaim",
+            "base": "",
+            "fields": [
+                {
+                    "name": "account",
+                    "type": "name"
+                }
+            ]
         }
     ],
     "types": [],
@@ -258,6 +268,11 @@
         {
             "name": "rmorder",
             "type": "rmorder",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "testclaim",
+            "type": "testclaim",
             "ricardian_contract": ""
         }
     ],
