@@ -135,7 +135,7 @@ inline void sign::check_selling(const name &buyer, asset in, const vector<string
     @param params 商品编号，推荐人编号
 */
 // from onTransfer
-void sign::selling(const name &buyer, asset in, const vector<string> &params)
+void sign::buy(const name &buyer, asset in, const vector<string> &params)
 {
     require_auth(buyer);
     check_selling(buyer, in, params);
@@ -146,7 +146,6 @@ void sign::selling(const name &buyer, asset in, const vector<string> &params)
     const int64_t times = in.amount / good->price; // asset / asset
     eosio_assert(times > 0, "You have wrong cost." );
     eosio_assert(times * good->price == in.amount, "You must buy integer number of goods." );
-
    
     // 写入订单表格
     auto _id = _orders.available_primary_key();
@@ -157,112 +156,75 @@ void sign::selling(const name &buyer, asset in, const vector<string> &params)
         o.buyer = buyer;
     });
 
-    /* SEND_INLINE_ACTION(*this, recselling, { _self, "active"_n }, { good->id, buyer, times }); */
+    // 处理上游分销商
+    if (params.size() >= 2)
+    {
+        auto upstream_share_id = string_to_int(params[2]);
+        auto upstream_share = _shares.find(upstream_share_id);
+        // 找不到沒做處理
+        if (upstream_share != _shares.end())
+        {
+            int64_t delta = upstream_share->quota < times * good->fission_bonus ? upstream_share->quota : times * good->fission_bonus;
+            _shares.modify(upstream_share, _self, [&](auto &s) {
+                s.quota -= delta;
+            });
+
+            add_share_income(upstream_share->reader, asset(delta, EOS_SYMBOL));
+        }
+    }
+    /* 目前都是官方卖家，所以暂不处理
+    // 处理卖家
+    singleton_players_t _player(_self, sign->author.value);
+    auto p = _player.get_or_create(_self, player_info{});
+    p.sign_income += in.amount;
+    _player.set(p, _self);
+    */
 }
 
 /**
     賣货
 
-    @param buyer 買家
+    @param subscriber 订购者
     @param in 付的錢
     @param params 商品编号，推荐人编号
 */
 // from onTransfer
-void sign::superselling(const name &buyer, asset in, const vector<string> &params)
+void sign::subscribe(const name &subscriber, asset in, const vector<string> &params)
 {
-    require_auth(buyer);
-    check_selling(buyer, in, params);
+    require_auth(subscriber);
+    check_selling(subscriber, in, params);
     
     uint64_t good_id = string_to_int(params[1]);
     auto good = _goods.require_find(good_id, "this good is not exist");
 
     const int64_t times = in.amount / good->price; // asset / asset
     eosio_assert(times > 0, "You have wrong cost." );
-    eosio_assert(times * good->price == in.amount, "You must buy integer number of goods." );
-
-    index_order_t p_orders(_self, buyer.value);
-
-    // 写入订单表格
-    auto _id = _orders.available_primary_key();
-    _orders.emplace(_self, [&](auto &o) {
-        o.id = _id;
-        o.good_id = good_id;
-        o.count = times;
-        o.buyer = buyer;
-    });
-
-    /*
-    // id      同總表的
-    // good_id 同總表的
-    // 這個 ram_payer 應該 buyer 付，不過一樣會造成各種問題，總之一律先 _self
-    * 因為同步新增的關係，不會有重復，不做檢查
-    * 刪除時務必一起刪
-    */
-    p_orders.emplace(_self, [&](auto &o) {
-        o.id = _id;
-        o.good_id = good_id;
-        o.count = 0; // 已賣出數量
-        o.buyer = buyer; // 這裡應該叫 owner
-    });
-
-    // 写入 shares 表格
-    /* id 自動
-     * target_sign_id order_id
-     * 
-    */
-    auto _id2 = _shares.available_primary_key();
+    eosio_assert(times * good->price == in.amount, "You must subscribe integer number of goods." );
+   
+    // 写入分享表格
+    auto _id = _shares.available_primary_key();
     _shares.emplace(_self, [&](auto &s) {
-        s.id = _id2;
-        s.reader = buyer;
-        s.target_sign_id = _id;
-        s.quota = in.amount * good->fission_factor / 1000;
+        s.id = _id;
+        s.reader = from;
+        s.target_sign_id = id;
+        s.quota = in.amount * sign->fission_factor / 1000;
     });
 
-    /* SEND_INLINE_ACTION(*this, recselling, { _self, "active"_n }, { good->id, buyer, times }); */
-}
-
-/**
-    透過返利連結的賣貨
-
-    @param buyer 買家
-    @param in 付的錢
-    @param params 商品编号，order_id
-*/
-void sign::shareselling(const name &buyer, asset in, const vector<string> &params)
-{
-    require_auth(buyer);
-    check_selling(buyer, in, params);
-
-    uint64_t good_id = string_to_int(params[1]);
-    uint64_t order_id = string_to_int(params[2]);
-    auto good = _goods.require_find(good_id, "this good is not exist");
-    auto order = _orders.require_find(order_id, "this order is not exist");
-    const name seller = order->buyer;
-    index_order_t p_orders(_self, seller.value);
-    auto p_order = p_orders.require_find(order_id, "this order is not exist");
-    auto target_id_index_shares = _shares.get_index<"bytargetid"_n>();
-    auto share = target_id_index_shares.require_find(order_id, "this share is not exist");
-
-    const int64_t times = in.amount / good->price; // asset / asset
-    eosio_assert(times > 0, "You have wrong cost." );
-    eosio_assert(times * good->price == in.amount, "You must buy integer number of goods." );
-
-    // 推荐返利
-    add_share_income(seller, asset{ static_cast<int64_t>(good->referral_bonus), EOS_SYMBOL});
-    // 裂变返利
-    // 賣貨數量++
-    p_orders.modify(p_order, _self, [&](auto &o) {
-        ++o.count;
-    });
-
-    // quota 扣除
-    int64_t delta = share->quota < in.amount ? share->quota : in.amount;
-    target_id_index_shares.modify(share, _self, [&](auto &s) {
-        s.quota -= delta;
-    });
-
-    // 返利++
-    add_share_income(seller, asset{ static_cast<int64_t>(good->fission_bonus), EOS_SYMBOL});
+    // 处理上游分销商
+    if (params.size() >= 2)
+    {
+        auto upstream_subscribe_id = string_to_int(params[2]);
+        auto upstream_subscribe = _subscribes.find(upstream_subscribe_id);
+        // 找不到沒做處理
+        if (upstream_subscribe != _subscribes.end())
+        {
+            /*int64_t delta = upstream_share->quota < times * good->fission_bonus ? upstream_share->quota : times * good->fission_bonus;
+            _shares.modify(upstream_share, _self, [&](auto &s) {
+                s.quota -= delta;
+            });
+            add_share_income(upstream_share->reader, asset(delta, EOS_SYMBOL));*/
+        }
+    }    
 }
 
 // 為什麼用 asset ，因為 asset 內含 overflow 檢查機制
@@ -351,17 +313,12 @@ void sign::onTransfer(name from, name to, asset in, string memo)
     }
     if (params[0] == "buy")
     {
-        selling(from, in, params);
+        buy(from, in, params);
         return;
     }
-    if (params[0] == "superbuy")
+    if (params[0] == "subscribe") 
     {
-        superselling(from, in, params);
-        return;
-    }
-    if (params[0] == "sharebuy")
-    {
-        shareselling(from, in, params);
+        subscribe(from, in, params);
         return;
     }
 }

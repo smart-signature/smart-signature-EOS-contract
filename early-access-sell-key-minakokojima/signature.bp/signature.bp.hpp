@@ -26,7 +26,8 @@ class [[eosio::contract("signature.bp")]] sign : public eosio::contract
         _signs(receiver, receiver.value),
         _shares(receiver, receiver.value),
         _goods(receiver, receiver.value),
-        _orders(receiver, receiver.value) {}
+        _orders(receiver, receiver.value),
+        _distributes(receiver, receiver.value) {}
 
     // 用户表格，记录收入
     // @param scope 为用户账户
@@ -69,9 +70,9 @@ class [[eosio::contract("signature.bp")]] sign : public eosio::contract
     {
         uint64_t id;
         uint64_t good_id;  // 商品, good_id
-        uint64_t count; // 数量
-        name buyer;     // 买家
-        name refer;     // 推荐人
+        uint64_t count;    // 数量
+        name buyer;        // 买家
+        name refer;        // 推荐人
         uint64_t primary_key()const { return id; }
         // EOSLIB_SERIALIZE(order_info, (id)(good_id)(count)(buyer)(refer) )
     };
@@ -88,30 +89,30 @@ class [[eosio::contract("signature.bp")]] sign : public eosio::contract
         // EOSLIB_SERIALIZE(order_info, (id)(good_id)(count)(buyer)(refer) )
     };
 
-    // 分销表格，全局
+    // 分享表格，全局
     // @param scope 为此合约
     struct [[eosio::table("distributes")]] distribute_info
     {
-        uint64_t id;                 // 分销 id
+        uint64_t id;                 // 分享 id
         uint64_t target_goods_id;    // 目标商品 id
-        name distributor;            // 分销商
-        uint64_t quota;              // 剩余配额
-        uint64_t work;               // 剩余工作量  
+        name subscriber;             // 读者
+        uint64_t quota;              // 剩余配额  
         uint64_t primary_key()const { return id; }
-    };
+        // EOSLIB_SERIALIZE(order_info, (id)(good_id)(count)(buyer)(refer) )
+    }; 
 
     typedef singleton<"players"_n, player_info> singleton_players_t;
     typedef eosio::multi_index<"signs"_n, sign_info> index_sign_t;
     typedef eosio::multi_index<"goods"_n, good_info> index_good_t;
     typedef eosio::multi_index<"orders"_n, order_info> index_order_t;    
-    // typedef eosio::multi_index<"shares"_n, share_info> index_share_t;
-    typedef eosio::multi_index< "shares"_n, share_info, 
-                                indexed_by<"bytargetid"_n, const_mem_fun<share_info, uint64_t, &share_info::get_target_id> > 
-            > index_share_t;
+    typedef eosio::multi_index<"shares"_n, share_info> index_share_t;
+    typedef eosio::multi_index<"distributes"_n, distribute_info> index_distribute_t;
+
     index_sign_t _signs;
     index_share_t _shares;
     index_good_t _goods;
     index_order_t _orders;
+    index_distribute_t _distributes;
     
     ACTION init();
     ACTION clean();
@@ -125,17 +126,16 @@ class [[eosio::contract("signature.bp")]] sign : public eosio::contract
     ACTION recselling( const uint64_t &good_id, const name &buyer, const uint64_t &quantity ) {
         require_auth(_self);
     }
-
+    
 private:
-    void add_share_income(const name &referrer, const asset &quantity);
+    inline void add_share_income(const name &referrer, const asset &quantity);
     inline void check_selling(const name &buyer, asset in, const vector<string> &params);
-    void selling(const name &buyer, asset in, const vector<string> &params);
-    void superselling(const name &buyer, asset in, const vector<string> &params);
-    void shareselling(const name &buyer, asset in, const vector<string> &params);
+    void share(name from, asset in, const vector<string>& params);    
+    void buy(const name &buyer, asset in, const vector<string> &params);
+    void subscribe(const name &subscribe, asset in, const vector<string> &params);
 
     void onTransfer(name from, name to,
                     asset in, string memo);
-    void share(name from, asset in, const vector<string>& params);
 
   public:
     void apply(uint64_t receiver, uint64_t code, uint64_t action)
@@ -156,7 +156,7 @@ private:
                 (clean)
                 (publish)
                 (claim)
-                (publishgood)
+                (publishgood)            
                 (rmorder)
                 (recselling)
             )
