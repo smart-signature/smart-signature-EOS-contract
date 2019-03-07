@@ -70,9 +70,9 @@ class [[eosio::contract("signature.bp")]] sign : public eosio::contract
     {
         uint64_t id;
         uint64_t good_id;  // 商品, good_id
-        uint64_t count; // 数量
-        name buyer;     // 买家
-        name refer;     // 推荐人
+        uint64_t count;    // 数量
+        name buyer;        // 买家
+        name refer;        // 推荐人
         uint64_t primary_key()const { return id; }
         // EOSLIB_SERIALIZE(order_info, (id)(good_id)(count)(buyer)(refer) )
     };
@@ -99,7 +99,7 @@ class [[eosio::contract("signature.bp")]] sign : public eosio::contract
         uint64_t quota;              // 剩余配额  
         uint64_t primary_key()const { return id; }
         // EOSLIB_SERIALIZE(order_info, (id)(good_id)(count)(buyer)(refer) )
-    };    
+    }; 
 
     typedef singleton<"players"_n, player_info> singleton_players_t;
     typedef eosio::multi_index<"signs"_n, sign_info> index_sign_t;

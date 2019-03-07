@@ -79,7 +79,6 @@ void sign::publishgood(name seller, uint64_t price, uint64_t referral_bonus, uin
 */
 void sign::share(name from, asset in, const vector<string> &params)
 {
-    /*
     require_auth(from);
     eosio_assert(in.amount >= 1000, "you need at least 0.1 EOS to sponsor a signature"); // 最小打赏 0.1 EOS
     eosio_assert(params.size() >= 1, "No ID found..");
@@ -119,7 +118,6 @@ void sign::share(name from, asset in, const vector<string> &params)
     auto p = _player.get_or_create(_self, player_info{});
     p.sign_income += in.amount;
     _player.set(p, _self);
-    */
 }
 
 inline void sign::check_selling(const name &buyer, asset in, const vector<string> &params)
@@ -138,7 +136,7 @@ inline void sign::check_selling(const name &buyer, asset in, const vector<string
 */
 // from onTransfer
 void sign::buy(const name &buyer, asset in, const vector<string> &params)
-{   /*
+{
     require_auth(buyer);
     check_selling(buyer, in, params);
     
@@ -174,7 +172,6 @@ void sign::buy(const name &buyer, asset in, const vector<string> &params)
             add_share_income(upstream_share->reader, asset(delta, EOS_SYMBOL));
         }
     }
-*/
     /* 目前都是官方卖家，所以暂不处理
     // 处理卖家
     singleton_players_t _player(_self, sign->author.value);
@@ -194,7 +191,6 @@ void sign::buy(const name &buyer, asset in, const vector<string> &params)
 // from onTransfer
 void sign::subscribe(const name &subscriber, asset in, const vector<string> &params)
 {
-    /*
     require_auth(subscriber);
     check_selling(subscriber, in, params);
     
@@ -212,9 +208,24 @@ void sign::subscribe(const name &subscriber, asset in, const vector<string> &par
         s.reader = from;
         s.target_sign_id = id;
         s.quota = in.amount * sign->fission_factor / 1000;
-    });  */  
-}
+    });
 
+    // 处理上游分销商
+    if (params.size() >= 2)
+    {
+        auto upstream_subscribe_id = string_to_int(params[2]);
+        auto upstream_subscribe = _subscribes.find(upstream_subscribe_id);
+        // 找不到沒做處理
+        if (upstream_subscribe != _subscribes.end())
+        {
+            /*int64_t delta = upstream_share->quota < times * good->fission_bonus ? upstream_share->quota : times * good->fission_bonus;
+            _shares.modify(upstream_share, _self, [&](auto &s) {
+                s.quota -= delta;
+            });
+            add_share_income(upstream_share->reader, asset(delta, EOS_SYMBOL));*/
+        }
+    }    
+}
 
 // 為什麼用 asset ，因為 asset 內含 overflow 檢查機制
 void sign::add_share_income(const name &referrer, const asset &quantity){
