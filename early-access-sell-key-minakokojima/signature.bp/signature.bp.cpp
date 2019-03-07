@@ -249,15 +249,12 @@ void sign::rmorder(const uint64_t id)
     // require_auth(_self);
     auto order = _orders.require_find(id, "thiss order is not exist");
     auto good = _goods.require_find(order->good_id, "this good is not exist");
-    index_order_t p_orders(_self, order->buyer.value);
-    auto p_order = p_orders.require_find(id, "thiss p_order is not exist");
 
     // 給 referrer
     add_share_income( order->refer, asset{ static_cast<int64_t>(order->count * good->referral_bonus), EOS_SYMBOL});
 
     // 最後，刪訂單
     _orders.erase(order);
-    p_orders.erase(p_order); // 照目前的邏輯，得一起刪
 }
 
 /**
