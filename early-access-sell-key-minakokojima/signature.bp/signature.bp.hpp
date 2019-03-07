@@ -88,6 +88,18 @@ class [[eosio::contract("signature.bp")]] sign : public eosio::contract
         // EOSLIB_SERIALIZE(order_info, (id)(good_id)(count)(buyer)(refer) )
     };
 
+    // 分销表格，全局
+    // @param scope 为此合约
+    struct [[eosio::table("distributes")]] distribute_info
+    {
+        uint64_t id;                 // 分销 id
+        uint64_t target_goods_id;    // 目标商品 id
+        name distributor;            // 分销商
+        uint64_t quota;              // 剩余配额
+        uint64_t work;               // 剩余工作量  
+        uint64_t primary_key()const { return id; }
+    };
+
     typedef singleton<"players"_n, player_info> singleton_players_t;
     typedef eosio::multi_index<"signs"_n, sign_info> index_sign_t;
     typedef eosio::multi_index<"goods"_n, good_info> index_good_t;
