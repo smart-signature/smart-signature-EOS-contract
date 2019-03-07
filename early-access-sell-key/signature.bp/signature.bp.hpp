@@ -85,6 +85,7 @@ class [[eosio::contract("signature.bp")]] sign : public eosio::contract
         name reader;                // 读者
         uint64_t quota;             // 剩余配额  
         uint64_t primary_key()const { return id; }
+        uint64_t get_target_id()const { return target_sign_id; }        
         // EOSLIB_SERIALIZE(order_info, (id)(good_id)(count)(buyer)(refer) )
     };
 
