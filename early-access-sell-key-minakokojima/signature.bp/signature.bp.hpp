@@ -136,8 +136,9 @@ class [[eosio::contract("signature.bp")]] sign : public eosio::contract
     
 private:
     inline void add_share_income(const name &referrer, const asset &quantity);
+    inline void add_sign_income(const name &referrer, const asset &quantity);
     inline void check_selling(const name &buyer, asset in, const vector<string> &params);
-    void share(name from, asset in, const vector<string>& params);    
+    void create_a_share(const name &sharer, asset in, const vector<string> &params);
     void buy(const name &buyer, asset in, const vector<string> &params);
     void subscribe(const name &subscribe, asset in, const vector<string> &params);
 

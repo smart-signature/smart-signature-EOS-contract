@@ -71,53 +71,51 @@ void sign::publishgood(name seller, uint64_t price, uint64_t referral_bonus, uin
 }
 
 /**
-    创建一次分享
+    创建一次分享並分錢給作者和上游讀者
 
-    @param from 读者
+    @param sharer 读者
     @param in 赏金
     @param params 签名 ID，上游分享 ID
 */
-void sign::share(name from, asset in, const vector<string> &params)
+void sign::create_a_share(const name &sharer, asset in, const vector<string> &params)
 {
-    require_auth(from);
+    require_auth(sharer);
     eosio_assert(in.amount >= 1000, "you need at least 0.1 EOS to sponsor a signature"); // 最小打赏 0.1 EOS
     eosio_assert(params.size() >= 1, "No ID found..");
 
-    auto id = string_to_int(params[1]);
-    auto sign = _signs.require_find(id, "this signature is not exist");
+    auto sign_id = string_to_int(params[1]);
+    auto sign = _signs.require_find(sign_id, "this signature is not exist");
 
-    // 写入分享表格
+    // 写入分享表
     auto _id = _shares.available_primary_key();
     _shares.emplace(_self, [&](auto &s) {
         s.id = _id;
-        s.reader = from;
-        s.target_sign_id = id;
+        s.reader = sharer;
+        s.target_sign_id = sign_id;
         s.quota = in.amount * sign->fission_factor / 1000;
     });
 
-    // 处理上游读者
-    if (params.size() >= 2)
-    {
+    // 分錢給上游读者
+    if (params.size() >= 2) {
         auto upstream_share_id = string_to_int(params[2]);
         auto upstream_share = _shares.find(upstream_share_id);
-        // 找不到沒做處理
-        if (upstream_share != _shares.end())
-        {
+        if (upstream_share != _shares.end()) {
             int64_t delta = upstream_share->quota < in.amount ? upstream_share->quota : in.amount;
+
+            // quota 扣掉並增加 share income
             _shares.modify(upstream_share, _self, [&](auto &s) {
                 s.quota -= delta;
             });
-
-            add_share_income(upstream_share->reader, asset(delta, EOS_SYMBOL));
+            add_share_income(upstream_share->reader, asset{delta, EOS_SYMBOL});
+            
+            // 扣掉已經發的錢
             in.amount -= delta;
         }
+        // 找不到沒做處理
     }
 
-    // 处理作者
-    singleton_players_t _player(_self, sign->author.value);
-    auto p = _player.get_or_create(_self, player_info{});
-    p.sign_income += in.amount;
-    _player.set(p, _self);
+    // 最後分錢給作者，已扣掉發掉的錢
+    add_sign_income(sign->author, in);
 }
 
 inline void sign::check_selling(const name &buyer, asset in, const vector<string> &params)
@@ -228,7 +226,14 @@ void sign::subscribe(const name &from, asset in, const vector<string> &params)
     }
 }
 
+/**
+    增加 share income
+    
+    @param referrer 增加誰的
+    @param quantity 加多少
+
 // 為什麼用 asset ，因為 asset 內含 overflow 檢查機制
+*/
 void sign::add_share_income(const name &referrer, const asset &quantity){
     singleton_players_t _player(_self, referrer.value);
     // 經驗談:
@@ -236,6 +241,24 @@ void sign::add_share_income(const name &referrer, const asset &quantity){
     // 需要一套方案，目前維持現狀
     auto p = _player.get_or_create(_self, player_info{});
     p.share_income += quantity.amount;
+    _player.set(p, _self);
+}
+
+/**
+    增加 sign income
+    
+    @param referrer 增加誰的
+    @param quantity 加多少
+
+// 為什麼用 asset ，因為 asset 內含 overflow 檢查機制
+*/
+void sign::add_sign_income(const name &referrer, const asset &quantity){
+    singleton_players_t _player(_self, referrer.value);
+    // 經驗談:
+    // 不該 or_create ，但不這麼做，哪天哪個點會找不到 player 而炸
+    // 需要一套方案，目前維持現狀
+    auto p = _player.get_or_create(_self, player_info{});
+    p.sign_income += quantity.amount;
     _player.set(p, _self);
 }
 
@@ -306,7 +329,7 @@ void sign::onTransfer(name from, name to, asset in, string memo)
 
     if (params[0] == "share")
     {
-        share(from, in, params);
+        create_a_share(from, in, params);
         return;
     }
     if (params[0] == "buy")
