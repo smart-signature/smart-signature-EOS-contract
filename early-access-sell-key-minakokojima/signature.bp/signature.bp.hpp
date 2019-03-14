@@ -3,8 +3,8 @@
  *  @copyright Andoromeda
  */
 #pragma once
-#include <eosiolib/eosio.hpp>
 #include <eosiolib/asset.hpp>
+#include <eosiolib/eosio.hpp>
 #include <eosiolib/singleton.hpp>
 // include <eosiolib/transaction.hpp>
 
@@ -16,8 +16,6 @@ using std::vector;
 using namespace eosio;
 using namespace config;
 
-typedef uint64_t time;
-
 class [[eosio::contract("signature.bp")]] sign : public eosio::contract
 {
   public:
@@ -26,8 +24,7 @@ class [[eosio::contract("signature.bp")]] sign : public eosio::contract
         _signs(receiver, receiver.value),
         _shares(receiver, receiver.value),
         _goods(receiver, receiver.value),
-        _orders(receiver, receiver.value),
-        _subscribes(receiver, receiver.value) {}
+        _orders(receiver, receiver.value) {}
 
     // 用户表格，记录收入
     // @param scope 为用户账户
@@ -44,8 +41,11 @@ class [[eosio::contract("signature.bp")]] sign : public eosio::contract
         uint64_t id; // 签名 id
         name author; // 作者
         uint64_t fission_factor; // 裂变系数 * 1000
+        string ipfs_hash;
+        eosio::public_key public_key;
+        eosio::signature signature;
         uint64_t primary_key()const { return id; }
-        // EOSLIB_SERIALIZE(sign_info, (id)(author)(fission_factor))
+        EOSLIB_SERIALIZE(sign_info, (id)(author)(fission_factor)(ipfs_hash)(public_key)(signature) )
     };
 
     // 商品表格，全局
@@ -112,11 +112,11 @@ class [[eosio::contract("signature.bp")]] sign : public eosio::contract
     index_share_t _shares;
     index_good_t _goods;
     index_order_t _orders;
-    index_subscribe_t _subscribes;
+
     
     ACTION init();
     ACTION clean(string type);
-    ACTION publish(name from, uint64_t fission_factor);
+    ACTION publish(const sign_info &sign);
     ACTION claim(name from);
 
     ACTION publishgood(name seller, uint64_t price, uint64_t referral_bonus, uint64_t fission_bonus, uint64_t fission_factor);
@@ -128,11 +128,12 @@ class [[eosio::contract("signature.bp")]] sign : public eosio::contract
     }
 
     // Test
+    /*
     ACTION testclaim(name account) {
         require_auth(account);
         add_share_income(account, {int64_t{1}, EOS_SYMBOL});
         SEND_INLINE_ACTION(*this, claim, { account, "active"_n }, { account });
-    }
+    }*/
     
 private:
     inline void add_share_income(const name &referrer, const asset &quantity);
@@ -167,7 +168,7 @@ private:
                 (publishgood)            
                 (rmorder)
                 (recselling)
-                (testclaim)
+                /*(testclaim)*/
             )
         }
     }

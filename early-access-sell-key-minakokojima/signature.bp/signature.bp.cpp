@@ -37,17 +37,15 @@ void sign::clean( string type )
     @param from 作者
     @param params 裂变系数
 */    
-void sign::publish(name from, uint64_t fission_factor)
+void sign::publish(const sign_info &sign)
 {
-    require_auth(from);
-    eosio_assert(1000 <= fission_factor && fission_factor <= 2000, "illegal fission_factor");
-
+    require_auth(sign.author);
+    eosio_assert(1000 <= sign.fission_factor && sign.fission_factor <= 2000, "illegal fission_factor");
     // 写入签名表格
     auto _id = _signs.available_primary_key();
     _signs.emplace(_self, [&](auto &s) {
+        s = sign ;
         s.id = _id;
-        s.author = from;
-        s.fission_factor = fission_factor;
     });
 }
 
@@ -165,6 +163,7 @@ void sign::buy(const name &buyer, asset in, const vector<string> &params)
     if (params.size() >= 2)
     {  
         auto upstream_subscribe_id = string_to_int(params[2]);
+        index_subscribe_t _subscribes(_self, _self.value);
         auto upstream_subscribe = _subscribes.find(upstream_subscribe_id);
         // 找不到沒做處理
         if (upstream_subscribe != _subscribes.end())
@@ -208,6 +207,7 @@ void sign::subscribe(const name &from, asset in, const vector<string> &params)
     eosio_assert(times * good->price == in.amount, "You must subscribe integer number of goods." );
    
     // 写入订购表格
+    index_subscribe_t _subscribes(_self, _self.value);
     auto _id = _subscribes.available_primary_key();
     _subscribes.emplace(_self, [&](auto &s) {
         s.id = _id;
@@ -281,7 +281,7 @@ void sign::rmorder(const uint64_t id)
     auto good = _goods.require_find(order->good_id, "this good is not exist");
 
     // 給 referrer
-    add_share_income( order->refer, asset{ static_cast<int64_t>(order->count * good->referral_bonus), EOS_SYMBOL});
+    add_share_income(order->refer, asset{ static_cast<int64_t>(order->count * good->referral_bonus), EOS_SYMBOL});
 
     // 最後，刪訂單
     _orders.erase(order);

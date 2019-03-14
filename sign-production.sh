@@ -4,11 +4,20 @@ cleos -u http://api.eosnewyork.io:80 get info
 #production
 cleos -u http://api.eosnewyork.io:80 set contract signature.bp ./early-access-sell-key-minakokojima/signature.bp -p signature.bp@active
 
+cleos -u http://api-direct.eosasia.one push action signature.bp publish '{"sign":{"id":"0", "author":"rukamoemoe51", "fission_factor":"2000", "ipfs_hash":"", "public_key":"EOS5P9HXdVTcAVMph4ZppDKBMkBuT6ihnkLqTUrVFBtGR94cPjykJ", "signature":"SIG_K1_KZU9PyXP8YAePjCfCcmBjGHARkvTVDjKpKvVgS6XL8o2FXTXUdhP3rqrL38dJYgJo2WNBdYubsY9LKTo47RUUE4N3ZHjZQ"}}' -p rukamoemoe51@active
+
 cleos -u http://api-direct.eosasia.one push action signature.bp rmorder '["0"]' -p rukamoemoe51@active
+cleos -u http://api-direct.eosasia.one push action signature.bp clean '["signs"]' -p signature.bp@active
+
+
+
+#test
 cleos -u http://api.eosnewyork.io:80 push action signature.bp testclaim '["rukamoemoe51"]' -p rukamoemoe51@active
 
+
+
 cleos -u http://api-direct.eosasia.one get table signature.bp signature.bp signs
-cleos -u http://api-direct.eosasia.one get table signature.bp signature.bp goods
-cleos -u http://api-direct.eosasia.one get table signature.bp signature.bp orders
 cleos -u http://api-direct.eosasia.one get table signature.bp rukamoemoe51 players
 
+#cleos -u http://api-direct.eosasia.one get table signature.bp signature.bp goods
+#cleos -u http://api-direct.eosasia.one get table signature.bp signature.bp orders

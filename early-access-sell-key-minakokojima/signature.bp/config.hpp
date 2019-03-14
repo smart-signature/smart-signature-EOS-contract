@@ -1,7 +1,5 @@
 #ifndef _CONFIG_HPP
 
-#include <eosiolib/asset.hpp>
-
 namespace config {
 
 // basic
@@ -9,12 +7,12 @@ const auto EOS_SYMBOL = eosio::symbol("EOS", 4);
 const auto EOS_CONTRACT = "eosio.token"_n;
 
 // token's setting
-const auto SST_SYMBOL = eosio::symbol("SST", 4) ; // 待開會討論
-const auto SST_CONTRACT = "dacincubator"_n ; // 待開會討論
-// constexpr auto SST_MAX_SUPPLY = 300000000000;  // 待開會討論
+// const auto SST_SYMBOL = eosio::symbol("SST", 4) ;
+// const auto SST_CONTRACT = "dacincubator"_n ;
+// constexpr auto SST_MAX_SUPPLY = 300000000000;
 
-const auto TOKEN_SYMBOL = SST_SYMBOL ;
-const auto TOKEN_CONTRACT = SST_CONTRACT ;
+// const auto TOKEN_SYMBOL =  ;
+// const auto TOKEN_CONTRACT =  ;
 
 // const auto DIVIDEND_EX_SYMBOL = eosio::extended_symbol( EOS_SYMBOL, EOS_CONTRACT ) ;
 
