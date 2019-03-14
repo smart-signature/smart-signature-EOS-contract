@@ -16,12 +16,19 @@ void sign::init()
 /**
     清理表格
 */
-void sign::clean()
+void sign::clean( string type )
 {
     require_auth(_self);
-    while (_orders.begin() != _orders.end()) {
-        _orders.erase(_orders.begin());
+    if ( type == "orders" ) {
+        while (_orders.begin() != _orders.end()) {
+            _orders.erase(_orders.begin());
+        }
+    } else if ( type == "signs" ) {
+        while (_signs.begin() != _signs.end()) {
+            _signs.erase(_signs.begin());
+        }
     }
+
 }
 
 /**

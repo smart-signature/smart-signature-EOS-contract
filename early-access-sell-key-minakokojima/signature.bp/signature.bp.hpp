@@ -115,7 +115,7 @@ class [[eosio::contract("signature.bp")]] sign : public eosio::contract
     index_subscribe_t _subscribes;
     
     ACTION init();
-    ACTION clean();
+    ACTION clean(string type);
     ACTION publish(name from, uint64_t fission_factor);
     ACTION claim(name from);
 

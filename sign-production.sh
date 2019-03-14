@@ -7,6 +7,8 @@ cleos -u http://api.eosnewyork.io:80 set contract signature.bp ./early-access-se
 cleos -u http://api-direct.eosasia.one push action signature.bp rmorder '["0"]' -p rukamoemoe51@active
 cleos -u http://api.eosnewyork.io:80 push action signature.bp testclaim '["rukamoemoe51"]' -p rukamoemoe51@active
 
+cleos -u http://api-direct.eosasia.one get table signature.bp signature.bp signs
 cleos -u http://api-direct.eosasia.one get table signature.bp signature.bp goods
 cleos -u http://api-direct.eosasia.one get table signature.bp signature.bp orders
 cleos -u http://api-direct.eosasia.one get table signature.bp rukamoemoe51 players
+
