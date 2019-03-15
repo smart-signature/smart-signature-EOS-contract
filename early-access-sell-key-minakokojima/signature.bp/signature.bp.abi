@@ -1,5 +1,5 @@
 {
-    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT Fri Mar 15 13:28:28 2019",
+    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT Fri Mar 15 13:52:50 2019",
     "version": "eosio::abi/1.1",
     "structs": [
         {
@@ -252,6 +252,16 @@
                     "type": "uint64"
                 }
             ]
+        },
+        {
+            "name": "syspublish",
+            "base": "",
+            "fields": [
+                {
+                    "name": "sign",
+                    "type": "sign_info"
+                }
+            ]
         }
     ],
     "types": [],
@@ -294,6 +304,11 @@
         {
             "name": "rmorder",
             "type": "rmorder",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "syspublish",
+            "type": "syspublish",
             "ricardian_contract": ""
         }
     ],

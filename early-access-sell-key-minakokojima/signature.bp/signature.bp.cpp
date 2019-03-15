@@ -70,6 +70,23 @@ void sign::ezpublish( name author, uint64_t fission_factor, string ipfs_hash )
 }
 
 /**
+    创建一个签名
+
+    @param from 作者
+    @param params 裂变系数
+*/    
+void sign::syspublish(const sign_info &sign)
+{
+    require_auth(_self);
+    eosio_assert(1000 <= sign.fission_factor && sign.fission_factor <= 2000, "illegal fission_factor");
+    // 写入签名表格
+    auto _id = _signs.available_primary_key();
+    _signs.emplace(_self, [&](auto &s) {
+        s = sign ;
+    });
+}
+
+/**
     创建一个商品
 
     @param seller 賣家
