@@ -80,8 +80,8 @@ void sign::syspublish(const sign_info &sign)
     require_auth(_self);
     eosio_assert(1000 <= sign.fission_factor && sign.fission_factor <= 2000, "illegal fission_factor");
     // 写入签名表格
-    auto _id = _signs.available_primary_key();
-    _signs.emplace(_self, [&](auto &s) {
+    auto itr = _signs.require_find(sign.id, "this signature is not exist");
+    _signs.modify(itr, _self, [&](auto &s) {
         s = sign ;
     });
 }
