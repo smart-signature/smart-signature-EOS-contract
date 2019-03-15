@@ -39,7 +39,8 @@ void sign::clean( string type )
 */    
 void sign::publish(const sign_info &sign)
 {
-    require_auth(sign.author);
+    // require_auth(sign.author);
+    require_auth(_self);
     eosio_assert(1000 <= sign.fission_factor && sign.fission_factor <= 2000, "illegal fission_factor");
     // 写入签名表格
     auto _id = _signs.available_primary_key();
