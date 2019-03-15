@@ -1,5 +1,5 @@
 {
-    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT Thu Mar 14 16:17:09 2019",
+    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT Fri Mar 15 13:28:28 2019",
     "version": "eosio::abi/1.1",
     "structs": [
         {
@@ -18,6 +18,24 @@
             "fields": [
                 {
                     "name": "type",
+                    "type": "string"
+                }
+            ]
+        },
+        {
+            "name": "ezpublish",
+            "base": "",
+            "fields": [
+                {
+                    "name": "author",
+                    "type": "name"
+                },
+                {
+                    "name": "fission_factor",
+                    "type": "uint64"
+                },
+                {
+                    "name": "ipfs_hash",
                     "type": "string"
                 }
             ]
@@ -246,6 +264,11 @@
         {
             "name": "clean",
             "type": "clean",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "ezpublish",
+            "type": "ezpublish",
             "ricardian_contract": ""
         },
         {

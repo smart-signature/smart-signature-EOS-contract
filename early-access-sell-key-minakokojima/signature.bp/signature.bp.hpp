@@ -117,6 +117,7 @@ class [[eosio::contract("signature.bp")]] sign : public eosio::contract
     ACTION init();
     ACTION clean(string type);
     ACTION publish(const sign_info &sign);
+    ACTION ezpublish( name author, uint64_t fission_factor, string ipfs_hash );
     ACTION claim(name from);
 
     ACTION publishgood(name seller, uint64_t price, uint64_t referral_bonus, uint64_t fission_bonus, uint64_t fission_factor);
@@ -164,6 +165,7 @@ private:
                 (init)
                 (clean)
                 (publish)
+                (ezpublish)
                 (claim)
                 (publishgood)            
                 (rmorder)
