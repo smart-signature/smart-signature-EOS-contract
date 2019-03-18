@@ -1,7 +1,25 @@
 {
-    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT Mon Mar 18 13:43:15 2019",
+    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT Mon Mar 18 14:19:10 2019",
     "version": "eosio::abi/1.1",
     "structs": [
+        {
+            "name": "bill",
+            "base": "",
+            "fields": [
+                {
+                    "name": "type",
+                    "type": "string"
+                },
+                {
+                    "name": "owner",
+                    "type": "name"
+                },
+                {
+                    "name": "quantity",
+                    "type": "asset"
+                }
+            ]
+        },
         {
             "name": "claim",
             "base": "",
@@ -276,6 +294,11 @@
     ],
     "types": [],
     "actions": [
+        {
+            "name": "bill",
+            "type": "bill",
+            "ricardian_contract": ""
+        },
         {
             "name": "claim",
             "type": "claim",

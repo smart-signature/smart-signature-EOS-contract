@@ -277,14 +277,17 @@ void sign::subscribe(const name &from, asset in, const vector<string> &params)
 
 // 為什麼用 asset ，因為 asset 內含 overflow 檢查機制
 */
-void sign::add_share_income(const name &referrer, const asset &quantity){
-    singleton_players_t _player(_self, referrer.value);
+void sign::add_share_income(const name &owner, const asset &quantity){
+    singleton_players_t _player(_self, owner.value);
     // 經驗談:
     // 不該 or_create ，但不這麼做，哪天哪個點會找不到 player 而炸
     // 需要一套方案，目前維持現狀
     auto p = _player.get_or_create(_self, player_info{});
     p.share_income += quantity.amount;
     _player.set(p, _self);
+
+    string str{"share income"};
+    SEND_INLINE_ACTION(*this, bill, { _self, "active"_n }, { str, owner, quantity });
 }
 
 /**
@@ -303,6 +306,9 @@ void sign::add_sign_income(const name &referrer, const asset &quantity){
     auto p = _player.get_or_create(_self, player_info{});
     p.sign_income += quantity.amount;
     _player.set(p, _self);
+
+    string str{"sign income"};
+    SEND_INLINE_ACTION(*this, bill, { _self, "active"_n }, { str, referrer, quantity });
 }
 
 /**
@@ -385,4 +391,18 @@ void sign::onTransfer(name from, name to, asset in, string memo)
         subscribe(from, in, params);
         return;
     }
+    if (params[0] == "billtest") 
+    {
+        string str{"test income"};
+        SEND_INLINE_ACTION(*this, bill, { _self, "active"_n }, { str, from, in });
+        action(
+            permission_level{_self, "active"_n},
+            EOS_CONTRACT, "transfer"_n,
+            make_tuple(_self, from, in,
+                   string{"test income back"}))
+        .send();
+        return;
+    }
+
+    
 }

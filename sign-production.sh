@@ -16,8 +16,10 @@ cleos -u http://api-direct.eosasia.one push action signature.bp clean '["signs"]
 
 
 #test
-cleos -u http://api.eosnewyork.io:80 push action signature.bp testclaim '["rukamoemoe51"]' -p rukamoemoe51@active
+cleos -u https://api.eosnewyork.io:80 push action signature.bp testclaim '["rukamoemoe51"]' -p rukamoemoe51@active
 
+cleos -u https://api.eosnewyork.io push action eosio.token transfer '[ "rukamoemoe51", "signature.bp", "0.1000 EOS", "billtest"]' -p rukamoemoe51@active
+cleos -u https://api.eosnewyork.io push action eosio.token transfer '[ "megumimegumi", "signature.bp", "0.1000 EOS", "billtest"]' -p megumimegumi@active
 
 
 cleos -u http://api-direct.eosasia.one get table signature.bp signature.bp signs
