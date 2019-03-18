@@ -332,7 +332,7 @@ void sign::rmorder(const uint64_t id)
 /**
     提现
 
-    @param from 不是发起者，是申請需claim的帳號。發起者可以跟後者不同的，要注意
+    @param from 不是发起者，是申請需 claim 的帳號。發起者可以跟後者不同的，要注意
 */
 void sign::claim(name from)
 {

@@ -1,5 +1,5 @@
 {
-    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT Mon Mar 18 14:19:10 2019",
+    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT Tue Mar 19 00:52:21 2019",
     "version": "eosio::abi/1.1",
     "structs": [
         {
@@ -41,83 +41,9 @@
             ]
         },
         {
-            "name": "ezpublish",
-            "base": "",
-            "fields": [
-                {
-                    "name": "author",
-                    "type": "name"
-                },
-                {
-                    "name": "fission_factor",
-                    "type": "uint64"
-                },
-                {
-                    "name": "ipfs_hash",
-                    "type": "string"
-                }
-            ]
-        },
-        {
-            "name": "good_info",
-            "base": "",
-            "fields": [
-                {
-                    "name": "id",
-                    "type": "uint64"
-                },
-                {
-                    "name": "seller",
-                    "type": "name"
-                },
-                {
-                    "name": "price",
-                    "type": "uint64"
-                },
-                {
-                    "name": "referral_bonus",
-                    "type": "uint64"
-                },
-                {
-                    "name": "fission_bonus",
-                    "type": "uint64"
-                },
-                {
-                    "name": "fission_factor",
-                    "type": "uint64"
-                }
-            ]
-        },
-        {
             "name": "init",
             "base": "",
             "fields": []
-        },
-        {
-            "name": "order_info",
-            "base": "",
-            "fields": [
-                {
-                    "name": "id",
-                    "type": "uint64"
-                },
-                {
-                    "name": "good_id",
-                    "type": "uint64"
-                },
-                {
-                    "name": "count",
-                    "type": "uint64"
-                },
-                {
-                    "name": "buyer",
-                    "type": "name"
-                },
-                {
-                    "name": "refer",
-                    "type": "name"
-                }
-            ]
         },
         {
             "name": "player_info",
@@ -144,32 +70,6 @@
             ]
         },
         {
-            "name": "publishgood",
-            "base": "",
-            "fields": [
-                {
-                    "name": "seller",
-                    "type": "name"
-                },
-                {
-                    "name": "price",
-                    "type": "uint64"
-                },
-                {
-                    "name": "referral_bonus",
-                    "type": "uint64"
-                },
-                {
-                    "name": "fission_bonus",
-                    "type": "uint64"
-                },
-                {
-                    "name": "fission_factor",
-                    "type": "uint64"
-                }
-            ]
-        },
-        {
             "name": "recselling",
             "base": "",
             "fields": [
@@ -188,30 +88,12 @@
             ]
         },
         {
-            "name": "rmorder",
-            "base": "",
-            "fields": [
-                {
-                    "name": "id",
-                    "type": "uint64"
-                }
-            ]
-        },
-        {
             "name": "share_info",
             "base": "",
             "fields": [
                 {
                     "name": "id",
                     "type": "uint64"
-                },
-                {
-                    "name": "target_sign_id",
-                    "type": "uint64"
-                },
-                {
-                    "name": "reader",
-                    "type": "name"
                 },
                 {
                     "name": "quota",
@@ -250,38 +132,6 @@
             ]
         },
         {
-            "name": "subscribe_info",
-            "base": "",
-            "fields": [
-                {
-                    "name": "id",
-                    "type": "uint64"
-                },
-                {
-                    "name": "target_goods_id",
-                    "type": "uint64"
-                },
-                {
-                    "name": "subscriber",
-                    "type": "name"
-                },
-                {
-                    "name": "quota",
-                    "type": "uint64"
-                }
-            ]
-        },
-        {
-            "name": "syspublish",
-            "base": "",
-            "fields": [
-                {
-                    "name": "sign",
-                    "type": "sign_info"
-                }
-            ]
-        },
-        {
             "name": "testclaim",
             "base": "",
             "fields": [
@@ -310,11 +160,6 @@
             "ricardian_contract": ""
         },
         {
-            "name": "ezpublish",
-            "type": "ezpublish",
-            "ricardian_contract": ""
-        },
-        {
             "name": "init",
             "type": "init",
             "ricardian_contract": ""
@@ -325,23 +170,8 @@
             "ricardian_contract": ""
         },
         {
-            "name": "publishgood",
-            "type": "publishgood",
-            "ricardian_contract": ""
-        },
-        {
             "name": "recselling",
             "type": "recselling",
-            "ricardian_contract": ""
-        },
-        {
-            "name": "rmorder",
-            "type": "rmorder",
-            "ricardian_contract": ""
-        },
-        {
-            "name": "syspublish",
-            "type": "syspublish",
             "ricardian_contract": ""
         },
         {
@@ -351,20 +181,6 @@
         }
     ],
     "tables": [
-        {
-            "name": "goods",
-            "type": "good_info",
-            "index_type": "i64",
-            "key_names": [],
-            "key_types": []
-        },
-        {
-            "name": "orders",
-            "type": "order_info",
-            "index_type": "i64",
-            "key_names": [],
-            "key_types": []
-        },
         {
             "name": "players",
             "type": "player_info",
@@ -382,13 +198,6 @@
         {
             "name": "signs",
             "type": "sign_info",
-            "index_type": "i64",
-            "key_names": [],
-            "key_types": []
-        },
-        {
-            "name": "subscribes",
-            "type": "subscribe_info",
             "index_type": "i64",
             "key_names": [],
             "key_types": []
