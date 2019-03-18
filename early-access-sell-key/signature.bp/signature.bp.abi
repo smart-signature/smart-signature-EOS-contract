@@ -1,7 +1,25 @@
 {
-    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT Thu Mar  7 15:03:09 2019",
+    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT Mon Mar 18 14:19:10 2019",
     "version": "eosio::abi/1.1",
     "structs": [
+        {
+            "name": "bill",
+            "base": "",
+            "fields": [
+                {
+                    "name": "type",
+                    "type": "string"
+                },
+                {
+                    "name": "owner",
+                    "type": "name"
+                },
+                {
+                    "name": "quantity",
+                    "type": "asset"
+                }
+            ]
+        },
         {
             "name": "claim",
             "base": "",
@@ -15,7 +33,30 @@
         {
             "name": "clean",
             "base": "",
-            "fields": []
+            "fields": [
+                {
+                    "name": "type",
+                    "type": "string"
+                }
+            ]
+        },
+        {
+            "name": "ezpublish",
+            "base": "",
+            "fields": [
+                {
+                    "name": "author",
+                    "type": "name"
+                },
+                {
+                    "name": "fission_factor",
+                    "type": "uint64"
+                },
+                {
+                    "name": "ipfs_hash",
+                    "type": "string"
+                }
+            ]
         },
         {
             "name": "good_info",
@@ -97,12 +138,8 @@
             "base": "",
             "fields": [
                 {
-                    "name": "from",
-                    "type": "name"
-                },
-                {
-                    "name": "fission_factor",
-                    "type": "uint64"
+                    "name": "sign",
+                    "type": "sign_info"
                 }
             ]
         },
@@ -197,12 +234,71 @@
                 {
                     "name": "fission_factor",
                     "type": "uint64"
+                },
+                {
+                    "name": "ipfs_hash",
+                    "type": "string"
+                },
+                {
+                    "name": "public_key",
+                    "type": "public_key"
+                },
+                {
+                    "name": "signature",
+                    "type": "signature"
+                }
+            ]
+        },
+        {
+            "name": "subscribe_info",
+            "base": "",
+            "fields": [
+                {
+                    "name": "id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "target_goods_id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "subscriber",
+                    "type": "name"
+                },
+                {
+                    "name": "quota",
+                    "type": "uint64"
+                }
+            ]
+        },
+        {
+            "name": "syspublish",
+            "base": "",
+            "fields": [
+                {
+                    "name": "sign",
+                    "type": "sign_info"
+                }
+            ]
+        },
+        {
+            "name": "testclaim",
+            "base": "",
+            "fields": [
+                {
+                    "name": "account",
+                    "type": "name"
                 }
             ]
         }
     ],
     "types": [],
     "actions": [
+        {
+            "name": "bill",
+            "type": "bill",
+            "ricardian_contract": ""
+        },
         {
             "name": "claim",
             "type": "claim",
@@ -211,6 +307,11 @@
         {
             "name": "clean",
             "type": "clean",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "ezpublish",
+            "type": "ezpublish",
             "ricardian_contract": ""
         },
         {
@@ -236,6 +337,16 @@
         {
             "name": "rmorder",
             "type": "rmorder",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "syspublish",
+            "type": "syspublish",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "testclaim",
+            "type": "testclaim",
             "ricardian_contract": ""
         }
     ],
@@ -271,6 +382,13 @@
         {
             "name": "signs",
             "type": "sign_info",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "subscribes",
+            "type": "subscribe_info",
             "index_type": "i64",
             "key_names": [],
             "key_types": []

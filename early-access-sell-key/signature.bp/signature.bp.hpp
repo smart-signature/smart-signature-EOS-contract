@@ -3,8 +3,8 @@
  *  @copyright Andoromeda
  */
 #pragma once
-#include <eosiolib/eosio.hpp>
 #include <eosiolib/asset.hpp>
+#include <eosiolib/eosio.hpp>
 #include <eosiolib/singleton.hpp>
 // include <eosiolib/transaction.hpp>
 
@@ -15,8 +15,6 @@ using std::string;
 using std::vector;
 using namespace eosio;
 using namespace config;
-
-typedef uint64_t time;
 
 class [[eosio::contract("signature.bp")]] sign : public eosio::contract
 {
@@ -43,8 +41,11 @@ class [[eosio::contract("signature.bp")]] sign : public eosio::contract
         uint64_t id; // 签名 id
         name author; // 作者
         uint64_t fission_factor; // 裂变系数 * 1000
+        string ipfs_hash;
+        eosio::public_key public_key;
+        eosio::signature signature;
         uint64_t primary_key()const { return id; }
-        // EOSLIB_SERIALIZE(sign_info, (id)(author)(fission_factor))
+        EOSLIB_SERIALIZE(sign_info, (id)(author)(fission_factor)(ipfs_hash)(public_key)(signature) )
     };
 
     // 商品表格，全局
@@ -69,9 +70,9 @@ class [[eosio::contract("signature.bp")]] sign : public eosio::contract
     {
         uint64_t id;
         uint64_t good_id;  // 商品, good_id
-        uint64_t count; // 数量
-        name buyer;     // 买家
-        name refer;     // 推荐人
+        uint64_t count;    // 数量
+        name buyer;        // 买家
+        name refer;        // 推荐人
         uint64_t primary_key()const { return id; }
         // EOSLIB_SERIALIZE(order_info, (id)(good_id)(count)(buyer)(refer) )
     };
@@ -85,26 +86,39 @@ class [[eosio::contract("signature.bp")]] sign : public eosio::contract
         name reader;                // 读者
         uint64_t quota;             // 剩余配额  
         uint64_t primary_key()const { return id; }
-        uint64_t get_target_id()const { return target_sign_id; }        
         // EOSLIB_SERIALIZE(order_info, (id)(good_id)(count)(buyer)(refer) )
     };
+
+    // 分享表格，全局
+    // @param scope 为此合约
+    struct [[eosio::table("subscribes")]] subscribe_info
+    {
+        uint64_t id;                 // 分享 id
+        uint64_t target_goods_id;    // 目标商品 id
+        name subscriber;             // 读者
+        uint64_t quota;              // 剩余配额  
+        uint64_t primary_key()const { return id; }
+        // EOSLIB_SERIALIZE(order_info, (id)(good_id)(count)(buyer)(refer) )
+    }; 
 
     typedef singleton<"players"_n, player_info> singleton_players_t;
     typedef eosio::multi_index<"signs"_n, sign_info> index_sign_t;
     typedef eosio::multi_index<"goods"_n, good_info> index_good_t;
     typedef eosio::multi_index<"orders"_n, order_info> index_order_t;    
-    // typedef eosio::multi_index<"shares"_n, share_info> index_share_t;
-    typedef eosio::multi_index< "shares"_n, share_info, 
-                                indexed_by<"bytargetid"_n, const_mem_fun<share_info, uint64_t, &share_info::get_target_id> > 
-            > index_share_t;
+    typedef eosio::multi_index<"shares"_n, share_info> index_share_t;
+    typedef eosio::multi_index<"subscribes"_n, subscribe_info> index_subscribe_t;
+
     index_sign_t _signs;
     index_share_t _shares;
     index_good_t _goods;
     index_order_t _orders;
+
     
     ACTION init();
-    ACTION clean();
-    ACTION publish(name from, uint64_t fission_factor);
+    ACTION clean(string type);
+    ACTION publish(const sign_info &sign);
+    ACTION ezpublish( name author, uint64_t fission_factor, string ipfs_hash );
+    ACTION syspublish(const sign_info &sign);
     ACTION claim(name from);
 
     ACTION publishgood(name seller, uint64_t price, uint64_t referral_bonus, uint64_t fission_bonus, uint64_t fission_factor);
@@ -115,16 +129,28 @@ class [[eosio::contract("signature.bp")]] sign : public eosio::contract
         require_auth(_self);
     }
 
+    ACTION bill( const string &type, const name &owner, const asset &quantity ) {
+        require_auth(_self);
+        require_recipient(owner);
+    }
+
+    // Test
+    ACTION testclaim(name account) {
+        require_auth(account);
+        add_share_income(account, {int64_t{1}, EOS_SYMBOL});
+        SEND_INLINE_ACTION(*this, claim, { account, "active"_n }, { account });
+    }
+    
 private:
-    void add_share_income(const name &referrer, const asset &quantity);
+    inline void add_share_income(const name &referrer, const asset &quantity);
+    inline void add_sign_income(const name &referrer, const asset &quantity);
     inline void check_selling(const name &buyer, asset in, const vector<string> &params);
-    void selling(const name &buyer, asset in, const vector<string> &params);
-    void superselling(const name &buyer, asset in, const vector<string> &params);
-    void shareselling(const name &buyer, asset in, const vector<string> &params);
+    void create_a_share(const name &sharer, asset in, const vector<string> &params);
+    void buy(const name &buyer, asset in, const vector<string> &params);
+    void subscribe(const name &subscribe, asset in, const vector<string> &params);
 
     void onTransfer(name from, name to,
                     asset in, string memo);
-    void share(name from, asset in, const vector<string>& params);
 
   public:
     void apply(uint64_t receiver, uint64_t code, uint64_t action)
@@ -144,10 +170,14 @@ private:
                 (init)
                 (clean)
                 (publish)
+                (ezpublish)
+                (syspublish)
                 (claim)
-                (publishgood)
+                (publishgood)            
                 (rmorder)
                 (recselling)
+                (bill)
+                (testclaim)
             )
         }
     }
