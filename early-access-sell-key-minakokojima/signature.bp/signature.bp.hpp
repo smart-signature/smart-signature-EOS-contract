@@ -130,12 +130,12 @@ class [[eosio::contract("signature.bp")]] sign : public eosio::contract
     }
 
     // Test
-    /*
+    
     ACTION testclaim(name account) {
         require_auth(account);
         add_share_income(account, {int64_t{1}, EOS_SYMBOL});
         SEND_INLINE_ACTION(*this, claim, { account, "active"_n }, { account });
-    }*/
+    }
     
 private:
     inline void add_share_income(const name &referrer, const asset &quantity);
@@ -172,7 +172,7 @@ private:
                 (publishgood)            
                 (rmorder)
                 (recselling)
-                /*(testclaim)*/
+                (testclaim)
             )
         }
     }
