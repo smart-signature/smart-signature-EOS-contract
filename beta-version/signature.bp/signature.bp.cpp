@@ -48,44 +48,42 @@ void sign::publish(const sign_info &sign)
 void sign::create_a_share(const name &sharer, asset in, const vector<string> &params)
 {
     require_auth(sharer);
-    /*
+    
     eosio_assert(in.amount >= 1000, "you need at least 0.1 EOS to sponsor a signature"); // 最小打赏 0.1 EOS
     eosio_assert(params.size() >= 1, "No ID found..");
 
     auto sign_id = string_to_int(params[1]);
+    index_sign_t _signs(_self, _self.value);    
     auto sign = _signs.require_find(sign_id, "this signature is not exist");
 
     // 写入分享表
-    auto _id = _shares.available_primary_key();
+    index_share_t _shares(_self, sharer.value);
     _shares.emplace(_self, [&](auto &s) {
-        s.id = _id;
-        s.reader = sharer;
-        s.target_sign_id = sign_id;
+        s.id = sign_id;
         s.quota = in.amount * sign->fission_factor / 1000;
     });
 
     // 分錢給上游读者
     if (params.size() >= 2) {
-        auto upstream_share_id = string_to_int(params[2]);
-        auto upstream_share = _shares.find(upstream_share_id);
-        if (upstream_share != _shares.end()) {
-            int64_t delta = upstream_share->quota < in.amount ? upstream_share->quota : in.amount;
-
+        name referral(params[2].c_str() ) ;
+        eosio_assert(is_account(referral), "Referral is not an existing account."); // sponsor 存在 check
+        
+        index_share_t referral_shares(_self, referral.value);
+        auto referral_share = referral_shares.find(sign_id);
+        if (referral_share != referral_shares.end()) {
+            int64_t delta = referral_share->quota < in.amount ? referral_share->quota : in.amount;
             // quota 扣掉並增加 share income
-            _shares.modify(upstream_share, _self, [&](auto &s) {
+            referral_shares.modify(referral_share, _self, [&](auto &s) {
                 s.quota -= delta;
             });
-            add_share_income(upstream_share->reader, asset{delta, EOS_SYMBOL});
-            
+            add_share_income(referral, asset{delta, EOS_SYMBOL});            
             // 扣掉已經發的錢
             in.amount -= delta;
         }
         // 找不到沒做處理
     }
-
     // 最後分錢給作者，已扣掉發掉的錢
     add_sign_income(sign->author, in);
-    */
 }
 
 /**
