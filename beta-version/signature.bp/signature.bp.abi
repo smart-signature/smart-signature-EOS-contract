@@ -1,5 +1,5 @@
 {
-    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT Tue Mar 19 16:20:23 2019",
+    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT Tue Mar 19 16:28:39 2019",
     "version": "eosio::abi/1.1",
     "structs": [
         {
@@ -130,16 +130,6 @@
                     "type": "signature"
                 }
             ]
-        },
-        {
-            "name": "testclaim",
-            "base": "",
-            "fields": [
-                {
-                    "name": "account",
-                    "type": "name"
-                }
-            ]
         }
     ],
     "types": [],
@@ -172,11 +162,6 @@
         {
             "name": "recselling",
             "type": "recselling",
-            "ricardian_contract": ""
-        },
-        {
-            "name": "testclaim",
-            "type": "testclaim",
             "ricardian_contract": ""
         }
     ],
