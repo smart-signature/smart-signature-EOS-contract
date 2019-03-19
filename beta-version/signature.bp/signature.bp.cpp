@@ -18,6 +18,17 @@ void sign::init()
 */
 void sign::clean( string type )
 {
+    require_auth(_self);
+    if ( type == "orders" ) {
+        while (_orders.begin() != _orders.end()) {
+            _orders.erase(_orders.begin());
+        }
+    } else if ( type == "signs" ) {
+        while (_signs.begin() != _signs.end()) {
+            _signs.erase(_signs.begin());
+        }
+    }
+
 }
 
 /**
