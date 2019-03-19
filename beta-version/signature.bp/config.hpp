@@ -6,6 +6,8 @@ namespace config {
 const auto EOS_SYMBOL = eosio::symbol("EOS", 4);
 const auto EOS_CONTRACT = "eosio.token"_n;
 
+constexpr uint64_t PRICE_SCALE = 100000000;
+
 // token's setting
 // const auto SST_SYMBOL = eosio::symbol("SST", 4) ;
 // const auto SST_CONTRACT = "dacincubator"_n ;
@@ -21,7 +23,7 @@ const auto EOS_CONTRACT = "eosio.token"_n;
 
 // constexpr int64_t MINING_COEF = 10 ;
 
-constexpr uint64_t PRICE_SCALE = 100000000;
+
 
 // static constexpr time refund_delay = 3*24*3600;
 
