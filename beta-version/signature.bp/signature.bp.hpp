@@ -56,8 +56,11 @@ class [[eosio::contract("signature.bp")]] sign : public eosio::contract
     typedef eosio::multi_index<"signs"_n, sign_info> index_sign_t;  
     typedef singleton<"players"_n, player_info> singleton_players_t;
     
+    // Contract management
     ACTION init();
     ACTION clean(string type);
+
+    // Func
     ACTION publish(const sign_info &sign);
     ACTION claim(name from);
 
@@ -72,11 +75,12 @@ class [[eosio::contract("signature.bp")]] sign : public eosio::contract
     }
 
     // Test
+    /*
     ACTION testclaim(name account) {
         require_auth(account);
         add_share_income(account, {int64_t{1}, EOS_SYMBOL});
         SEND_INLINE_ACTION(*this, claim, { account, "active"_n }, { account });
-    }
+    }*/
     
 private:
     inline void add_share_income(const name &owner, const asset &quantity);
@@ -106,7 +110,7 @@ private:
                 (publish)
                 (claim)
                 (bill)
-                (testclaim)
+                /*(testclaim)*/
             )
         }
     }
