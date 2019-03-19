@@ -14,7 +14,6 @@ cleos -u http://api-direct.eosasia.one push action signature.bp publish '{"sign"
 cleos -u http://api-direct.eosasia.one push action signature.bp rmorder '["0"]' -p rukamoemoe51@active
 cleos -u http://api-direct.eosasia.one push action signature.bp clean '["signs"]' -p signature.bp@active
 
-
 #test
 cleos -u https://api.eosnewyork.io:80 push action signature.bp testclaim '["rukamoemoe51"]' -p rukamoemoe51@active
 
@@ -27,3 +26,4 @@ cleos -u http://api-direct.eosasia.one get table signature.bp rukamoemoe51 playe
 
 #cleos -u http://api-direct.eosasia.one get table signature.bp signature.bp goods
 #cleos -u http://api-direct.eosasia.one get table signature.bp signature.bp orders
+#cleos -u http://api-direct.eosasia.one get table signature.bp signature.bp subscribes

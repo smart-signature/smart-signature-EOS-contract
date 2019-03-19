@@ -27,6 +27,10 @@ void sign::clean( string type )
         while (_signs.begin() != _signs.end()) {
             _signs.erase(_signs.begin());
         }
+    } else if ( type == "goods" ) {
+        while (_goods.begin() != _goods.end()) {
+            _goods.erase(_goods.begin());
+        }
     }
 
 }
