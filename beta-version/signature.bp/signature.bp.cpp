@@ -20,13 +20,9 @@ void sign::clean( string type )
 {
     require_auth(_self);
     if ( type == "signs" ) {
-        while (_signs.begin() != _signs.end()) {
-            _signs.erase(_signs.begin());
-        }
-    } 
-    else if ( type == "shares" ) {
-        while (_shares.begin() != _shares.end()) {
-            _shares.erase(_shares.begin());
+        index_sign_t signs(_self, _self.value);
+        while (signs.begin() != signs.end()) {
+            signs.erase(signs.begin());
         }
     }
 
@@ -69,12 +65,12 @@ void sign::create_a_share(const name &sharer, asset in, const vector<string> &pa
     index_sign_t _signs(_self, _self.value);    
     auto sign = _signs.require_find(sign_id, "this signature is not exist");
 
-    // 写入分享表
+    
     index_share_t _shares(_self, sharer.value);
     auto share = _shares.find(sign->id);
     // A share can be only created by someone once.
     eosio_assert(share == _shares.end(), "the share was created");
-    
+    // 写入分享表
     _shares.emplace(_self, [&](auto &s) {
         s.id = sign->id;
         s.quota = in.amount * sign->fission_factor / 1000;
@@ -82,7 +78,7 @@ void sign::create_a_share(const name &sharer, asset in, const vector<string> &pa
 
     // 分錢給上游读者
     if (params.size() >= 2) {
-        name referral(params[2].c_str() ) ;
+        name referral{params[2].c_str()} ;
         eosio_assert(is_account(referral), "Referral is not an existing account."); // sponsor 存在 check
         
         index_share_t referral_shares(_self, referral.value);
