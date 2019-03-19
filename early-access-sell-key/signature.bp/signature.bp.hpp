@@ -26,13 +26,19 @@ class [[eosio::contract("signature.bp")]] sign : public eosio::contract
         _goods(receiver, receiver.value),
         _orders(receiver, receiver.value) {}
 
-    // 用户表格，记录收入
-    // @param scope 为用户账户
-    struct [[eosio::table("players")]] player_info
+    // 商品表格，全局
+    // @param scope 为此合约 
+    struct[[eosio::table("goods")]] good_info
     {
-        uint64_t sign_income;    // 签名收入
-        uint64_t share_income;   // 分享收入
-    };    
+        uint64_t id;
+        name seller; // 賣家
+        uint64_t price; // 一份的價格
+        uint64_t referral_bonus; // 推荐返利
+        uint64_t fission_bonus;  // 裂变返利
+        uint64_t fission_factor; // 裂变系数 * 1000
+        uint64_t primary_key()const { return id; }
+        // EOSLIB_SERIALIZE(good_info, (id)(seller)(price)(referral_bonus)(fission_bonus)(fission_factor) )
+    };
 
     // 签名表格，全局
     // @param scope 为此合约 
@@ -48,19 +54,7 @@ class [[eosio::contract("signature.bp")]] sign : public eosio::contract
         EOSLIB_SERIALIZE(sign_info, (id)(author)(fission_factor)(ipfs_hash)(public_key)(signature) )
     };
 
-    // 商品表格，全局
-    // @param scope 为此合约 
-    struct[[eosio::table("goods")]] good_info
-    {
-        uint64_t id;
-        name seller; // 賣家
-        uint64_t price; // 一份的價格
-        uint64_t referral_bonus; // 推荐返利
-        uint64_t fission_bonus;  // 裂变返利
-        uint64_t fission_factor; // 裂变系数 * 1000
-        uint64_t primary_key()const { return id; }
-        // EOSLIB_SERIALIZE(good_info, (id)(seller)(price)(referral_bonus)(fission_bonus)(fission_factor) )
-    };
+
 
     // 订单表格，全局
     // scope 為此合约的場合，是一般訂單
@@ -75,6 +69,14 @@ class [[eosio::contract("signature.bp")]] sign : public eosio::contract
         name refer;        // 推荐人
         uint64_t primary_key()const { return id; }
         // EOSLIB_SERIALIZE(order_info, (id)(good_id)(count)(buyer)(refer) )
+    };
+
+    // 用户表格，记录收入
+    // @param scope 为用户账户
+    struct [[eosio::table("players")]] player_info
+    {
+        uint64_t sign_income;    // 签名收入
+        uint64_t share_income;   // 分享收入
     };
 
     // 分享表格，全局
@@ -100,6 +102,8 @@ class [[eosio::contract("signature.bp")]] sign : public eosio::contract
         uint64_t primary_key()const { return id; }
         // EOSLIB_SERIALIZE(order_info, (id)(good_id)(count)(buyer)(refer) )
     }; 
+
+
 
     typedef singleton<"players"_n, player_info> singleton_players_t;
     typedef eosio::multi_index<"signs"_n, sign_info> index_sign_t;
