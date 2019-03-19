@@ -19,13 +19,14 @@ void sign::init()
 void sign::clean( string type )
 {
     require_auth(_self);
-    if ( type == "orders" ) {
-        while (_orders.begin() != _orders.end()) {
-            _orders.erase(_orders.begin());
-        }
-    } else if ( type == "signs" ) {
+    if ( type == "signs" ) {
         while (_signs.begin() != _signs.end()) {
             _signs.erase(_signs.begin());
+        }
+    } 
+    else if ( type == "shares" ) {
+        while (_shares.begin() != _shares.end()) {
+            _shares.erase(_shares.begin());
         }
     }
 
@@ -60,7 +61,7 @@ void sign::create_a_share(const name &sharer, asset in, const vector<string> &pa
 {
     require_auth(sharer);
     
-    eosio_assert(in.amount >= 1000, "you need at least 0.1 EOS to sponsor a signature"); // 最小打赏 0.1 EOS
+    eosio_assert(in.amount >= 1, "you need at least 0.0001 EOS to sponsor a signature");
     eosio_assert(params.size() >= 1, "No ID found..");
 
     auto sign_id = string_to_int(params[1]);
