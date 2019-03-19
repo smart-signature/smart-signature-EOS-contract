@@ -64,7 +64,6 @@ void sign::create_a_share(const name &sharer, asset in, const vector<string> &pa
     auto sign_id = string_to_int(params[1]);
     index_sign_t _signs(_self, _self.value);    
     auto sign = _signs.require_find(sign_id, "this signature is not exist");
-
     
     index_share_t _shares(_self, sharer.value);
     auto share = _shares.find(sign->id);
@@ -76,7 +75,7 @@ void sign::create_a_share(const name &sharer, asset in, const vector<string> &pa
         name referral{params[2].c_str()};
         eosio_assert(is_account(referral), "Referral is not an existing account."); // sponsor 存在 check
         // 推荐人是自己时忽略        
-        if (referral != sharer) { 
+        if (referral != sign->author) { 
             index_share_t referral_shares(_self, referral.value);
             auto referral_share = referral_shares.find(sign_id);
              // 推荐人找不到时忽略
