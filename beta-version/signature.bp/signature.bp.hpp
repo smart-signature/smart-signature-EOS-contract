@@ -79,8 +79,8 @@ class [[eosio::contract("signature.bp")]] sign : public eosio::contract
     }
     
 private:
-    inline void add_share_income(const name &referrer, const asset &quantity);
-    inline void add_sign_income(const name &referrer, const asset &quantity);
+    inline void add_share_income(const name &owner, const asset &quantity);
+    inline void add_sign_income(const name &owner, const asset &quantity);
     void create_a_share(const name &sharer, asset in, const vector<string> &params);
 
     void onTransfer(name from, name to,

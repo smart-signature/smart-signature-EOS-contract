@@ -119,13 +119,13 @@ void sign::add_share_income(const name &owner, const asset &quantity){
     @param referrer 增加誰的
     @param quantity 加多少
 */
-void sign::add_sign_income(const name &referrer, const asset &quantity){
-    singleton_players_t _player(_self, referrer.value);
+void sign::add_sign_income(const name &owner, const asset &quantity){
+    singleton_players_t _player(_self, owner.value);
     auto p = _player.get_or_create(_self, player_info{});
     p.sign_income += quantity.amount;
     _player.set(p, _self);
     string str{"sign income"};
-    SEND_INLINE_ACTION(*this, bill, { _self, "active"_n }, { str, referrer, quantity });
+    SEND_INLINE_ACTION(*this, bill, { _self, "active"_n }, { str, owner, quantity });
 }
 
 /**
@@ -175,7 +175,7 @@ void sign::onTransfer(name from, name to, asset in, string memo)
     auto params = split(memo, ' ');
     eosio_assert(params.size() >= 1, "error memo");
 
-    if (params[0] == "share")
+    if (params[0] == "support") // 打賞
     {
         create_a_share(from, in, params);
         return;
@@ -187,8 +187,7 @@ void sign::onTransfer(name from, name to, asset in, string memo)
         action(
             permission_level{_self, "active"_n},
             EOS_CONTRACT, "transfer"_n,
-            make_tuple(_self, from, in,
-                   string{"test income back"}))
+            make_tuple(_self, from, in, string{"test income back"}))
         .send();
         return;
     }   
