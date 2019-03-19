@@ -30,6 +30,15 @@ class [[eosio::contract("signature.bp")]] sign : public eosio::contract
         uint64_t share_income;   // 分享收入
     };    
 
+    // 分享表格
+    // scope 为读者
+    struct [[eosio::table("shares")]] share_info
+    {
+        uint64_t id;     // 签名 id
+        uint64_t quota;  // 剩余配额  
+        uint64_t primary_key()const { return id; }        
+    };
+    
     // 签名表格
     // scope: _self 為此合約
     struct[[eosio::table("signs")]] sign_info
@@ -43,18 +52,9 @@ class [[eosio::contract("signature.bp")]] sign : public eosio::contract
         uint64_t primary_key()const { return id; }
     };
 
-    // 分享表格
-    // scope 为读者
-    struct [[eosio::table("shares")]] share_info
-    {
-        uint64_t id;     // 签名 id
-        uint64_t quota;  // 剩余配额  
-        uint64_t primary_key()const { return id; }        
-    };
-
-    typedef singleton<"players"_n, player_info> singleton_players_t;
-    typedef eosio::multi_index<"signs"_n, sign_info> index_sign_t;  
     typedef eosio::multi_index<"shares"_n, share_info> index_share_t;;
+    typedef eosio::multi_index<"signs"_n, sign_info> index_sign_t;  
+    typedef singleton<"players"_n, player_info> singleton_players_t;
     
     ACTION init();
     ACTION clean(string type);
