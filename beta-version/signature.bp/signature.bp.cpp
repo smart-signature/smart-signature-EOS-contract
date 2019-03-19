@@ -75,19 +75,22 @@ void sign::create_a_share(const name &sharer, asset in, const vector<string> &pa
     if (params.size() >= 2) {
         name referral{params[2].c_str()};
         eosio_assert(is_account(referral), "Referral is not an existing account."); // sponsor 存在 check
-        if (referral == sharer) break; // 推荐人是自己时忽略        
-        index_share_t referral_shares(_self, referral.value);
-        auto referral_share = referral_shares.find(sign_id);
-        if (referral_share == referral_shares.end()) break; // 推荐人找不到时忽略
-
-        int64_t delta = referral_share->quota < in.amount ? referral_share->quota : in.amount;
-        // quota 扣掉並增加 share income
-        referral_shares.modify(referral_share, _self, [&](auto &s) {
-            s.quota -= delta;
-        });
-        add_share_income(referral, asset{delta, EOS_SYMBOL});            
-        // 扣掉已經發的錢
-        in.amount -= delta;
+        // 推荐人是自己时忽略        
+        if (referral != sharer) { 
+            index_share_t referral_shares(_self, referral.value);
+            auto referral_share = referral_shares.find(sign_id);
+             // 推荐人找不到时忽略
+            if (referral_share == referral_shares.end()) {
+                int64_t delta = referral_share->quota < in.amount ? referral_share->quota : in.amount;
+                // quota 扣掉並增加 share income
+                referral_shares.modify(referral_share, _self, [&](auto &s) {
+                    s.quota -= delta;
+                });
+                add_share_income(referral, asset{delta, EOS_SYMBOL});            
+                // 扣掉已經發的錢
+                in.amount -= delta;
+            }
+        }
     }
 
     // 写入分享表
