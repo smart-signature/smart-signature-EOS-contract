@@ -59,7 +59,7 @@ void sign::create_a_share(const name &sharer, asset in, const vector<string> &pa
     require_auth(sharer);
     
     eosio_assert(in.amount >= 1, "you need at least 0.0001 EOS to sponsor a signature");
-    eosio_assert(params.size() >= 1, "No ID found..");
+    eosio_assert(params.size() > 1, "No ID found..");
 
     auto sign_id = string_to_int(params[1]);
     index_sign_t _signs(_self, _self.value);    
@@ -72,7 +72,7 @@ void sign::create_a_share(const name &sharer, asset in, const vector<string> &pa
     eosio_assert(share == _shares.end(), "the share was created");
 
     // 分錢給上游读者
-    if (params.size() >= 2) {
+    if (params.size() > 2) {
         name referral{params[2].c_str()};
         eosio_assert(is_account(referral), "Referral is not an existing account."); // sponsor 存在 check
         // 推荐人是自己时忽略        
