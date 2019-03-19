@@ -43,8 +43,9 @@ void sign::publish(const sign_info &sign)
     // require_auth(sign.author);
     require_auth(_self);
     eosio_assert(1000 <= sign.fission_factor && sign.fission_factor <= 2000, "illegal fission_factor");
-    index_sign_t _signs(_self, _self.value);
+    
     // 写入签名表格
+    index_sign_t _signs(_self, _self.value);
     _signs.emplace(_self, [&](auto &s) {
         s = sign;
     });
@@ -70,8 +71,12 @@ void sign::create_a_share(const name &sharer, asset in, const vector<string> &pa
 
     // 写入分享表
     index_share_t _shares(_self, sharer.value);
+    auto share = _shares.find(sign->id);
+    // A share can be only created by someone once.
+    eosio_assert(share == _shares.end(), "the share was created");
+    
     _shares.emplace(_self, [&](auto &s) {
-        s.id = sign_id;
+        s.id = sign->id;
         s.quota = in.amount * sign->fission_factor / 1000;
     });
 
