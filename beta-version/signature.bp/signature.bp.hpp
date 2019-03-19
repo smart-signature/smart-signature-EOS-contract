@@ -31,7 +31,7 @@ class [[eosio::contract("signature.bp")]] sign : public eosio::contract
     };    
 
     // 签名表格
-    // scope 为合約
+    // scope: _self 為此合約
     struct[[eosio::table("signs")]] sign_info
     {
         uint64_t id;             // 签名 id
