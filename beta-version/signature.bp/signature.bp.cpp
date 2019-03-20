@@ -179,6 +179,9 @@ void sign::onTransfer(name from, name to, asset in, string memo)
     if (params[0] == "support") // 打賞
     {
         create_a_share(from, in, params);
+        string str{"support expenses"};
+        in = -in;
+        SEND_INLINE_ACTION(*this, bill, { _self, "active"_n }, { str, from, in });
         return;
     }
     if (params[0] == "billtest") 
