@@ -54,39 +54,44 @@ void sign::publish(const sign_info &sign)
     @param in 赏金
     @param params 签名 ID，上游分享 ID
 */
-void sign::create_a_share(const name &sharer, asset in, const vector<string> &params)
+void sign::create_a_share(const name &owner, asset in, const vector<string> &params)
 {
-    require_auth(sharer);
+    require_auth(owner);
     
     eosio_assert(in.amount >= 1, "you need at least 0.0001 EOS to sponsor a signature");
-    eosio_assert(params.size() > 1, "No ID found..");
+    // 0 -> false, 1 -> false, 2 -> true
+    eosio_assert(params.size() > 1, "No ID found.."); 
 
+    // 首先查 sign 存不存在
     auto sign_id = string_to_int(params[1]);
     index_sign_t _signs(_self, _self.value);    
     auto sign = _signs.require_find(sign_id, "this signature is not exist");
     
-    index_share_t _shares(_self, sharer.value);
+    // 查 owner 有沒有生過這 sign 的 share
+    index_share_t _shares(_self, owner.value);
     auto share = _shares.find(sign->id);
     // A share can be only created by someone once.
     eosio_assert(share == _shares.end(), "the share was created");
 
-    // 分錢給上游读者
-    if (params.size() > 2) {
+    // 分錢給推薦人，也就是上游读者
+    if (params.size() > 2) { // 有推薦人 referral 的情況
         name referral{params[2].c_str()};
-        eosio_assert(is_account(referral), "Referral is not an existing account."); // sponsor 存在 check
-        // 推荐人是自己时忽略        
-        if (referral != sign->author) { 
+        // check 推薦人是不是個人(x) 帳號(o)
+        eosio_assert(is_account(referral), "Referral is not an existing account."); 
+        
+        if (referral != owner) { // 推荐人不是 owner 时
             index_share_t referral_shares(_self, referral.value);
-            auto referral_share = referral_shares.find(sign_id);
-             // 推荐人找不到时忽略
-            if (referral_share == referral_shares.end()) {
-                int64_t delta = referral_share->quota < in.amount ? referral_share->quota : in.amount;
-                // quota 扣掉並增加 share income
-                referral_shares.modify(referral_share, _self, [&](auto &s) {
+            auto ref_share = referral_shares.find(sign_id);
+            if (ref_share != referral_shares.end()) { // 推荐人的 share 存在時
+                // 用 asset 啦 qwq
+                int64_t delta = ref_share->quota < in.amount ? ref_share->quota : in.amount;
+                // 從 quota 扣掉 delta
+                // 並增加 delta 到推薦人的 share income
+                referral_shares.modify(ref_share, _self, [&](auto &s) {
                     s.quota -= delta;
                 });
                 add_share_income(referral, asset{delta, EOS_SYMBOL});            
-                // 扣掉已經發的錢
+                // asset in 扣掉已發的錢，接著就進作者口袋
                 in.amount -= delta;
             }
         }
