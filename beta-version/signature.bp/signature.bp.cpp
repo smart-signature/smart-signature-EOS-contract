@@ -37,7 +37,7 @@ void sign::clean( string type )
 void sign::publish(const sign_info &sign)
 {
     // require_auth(sign.author);
-    require_auth(_self);
+    require_auth("kuriharachie"_n);
     eosio_assert(1000 <= sign.fission_factor && sign.fission_factor <= 2000, "illegal fission_factor");
     
     // 写入签名表格
