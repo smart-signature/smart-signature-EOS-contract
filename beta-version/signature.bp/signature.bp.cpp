@@ -188,9 +188,9 @@ void sign::onTransfer(name from, name to, asset in, string memo)
     {
         // 先扣錢才分錢，流程上在前面，所以 bill 改至前面
         string str{"support expenses"};
-        in = -in;
+        asset in2 = -in;
         const auto signId = string_to_int(params[1]);
-        SEND_INLINE_ACTION(*this, bill, { _self, "active"_n }, { str, from, in, signId });
+        SEND_INLINE_ACTION(*this, bill, { _self, "active"_n }, { str, from, in2, signId });
 
         create_a_share(from, in, params);
 
