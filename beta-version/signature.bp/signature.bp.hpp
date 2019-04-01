@@ -69,7 +69,7 @@ class [[eosio::contract("signature.bp")]] sign : public eosio::contract
         require_auth(_self);
     }
 
-    ACTION bill( const string &type, const name &owner, const asset &quantity ) {
+    ACTION bill( const string &type, const name &owner, const asset &quantity, const uint64_t &signId ) {
         require_auth(_self);
         require_recipient(owner);
     }
@@ -83,8 +83,8 @@ class [[eosio::contract("signature.bp")]] sign : public eosio::contract
     }*/
     
 private:
-    inline void add_share_income(const name &owner, const asset &quantity);
-    inline void add_sign_income(const name &owner, const asset &quantity);
+    inline void add_share_income(const name &owner, const asset &quantity, const uint64_t &signId);
+    inline void add_sign_income(const name &owner, const asset &quantity, const uint64_t &signId);
     void create_a_share(const name &sharer, asset in, const vector<string> &params);
 
     void onTransfer(name from, name to,

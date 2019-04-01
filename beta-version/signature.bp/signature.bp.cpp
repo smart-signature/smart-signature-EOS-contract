@@ -37,7 +37,7 @@ void sign::clean( string type )
 void sign::publish(const sign_info &sign)
 {
     // require_auth(sign.author);
-    require_auth("kuriharachie"_n);
+    require_auth("kuriharachie"_n); // 寫到 config 呀，別這麼覽呀
     eosio_assert(1000 <= sign.fission_factor && sign.fission_factor <= 2000, "illegal fission_factor");
     
     // 写入签名表格
@@ -63,9 +63,9 @@ void sign::create_a_share(const name &owner, asset in, const vector<string> &par
     eosio_assert(params.size() > 1, "No ID found.."); 
 
     // 首先查 sign 存不存在
-    auto sign_id = string_to_int(params[1]);
+    auto signId = string_to_int(params[1]);
     index_sign_t _signs(_self, _self.value);    
-    auto sign = _signs.require_find(sign_id, "this signature is not exist");
+    auto sign = _signs.require_find(signId, "this signature is not exist");
     
     // 查 owner 有沒有生過這 sign 的 share
     index_share_t _shares(_self, owner.value);
@@ -81,7 +81,7 @@ void sign::create_a_share(const name &owner, asset in, const vector<string> &par
         
         if (referral != owner) { // 推荐人不是 owner 时
             index_share_t referral_shares(_self, referral.value);
-            auto ref_share = referral_shares.find(sign_id);
+            auto ref_share = referral_shares.find(signId);
             if (ref_share != referral_shares.end()) { // 推荐人的 share 存在時
                 // 用 asset 啦 qwq
                 int64_t delta = ref_share->quota < in.amount ? ref_share->quota : in.amount;
@@ -90,7 +90,7 @@ void sign::create_a_share(const name &owner, asset in, const vector<string> &par
                 referral_shares.modify(ref_share, _self, [&](auto &s) {
                     s.quota -= delta;
                 });
-                add_share_income(referral, asset{delta, EOS_SYMBOL});            
+                add_share_income(referral, asset{delta, EOS_SYMBOL}, signId );            
                 // asset in 扣掉已發的錢，接著就進作者口袋
                 in.amount -= delta;
             }
@@ -104,7 +104,7 @@ void sign::create_a_share(const name &owner, asset in, const vector<string> &par
     });
 
     // 最後分錢給作者，已扣掉發掉的錢
-    add_sign_income(sign->author, in);
+    add_sign_income(sign->author, in, signId);
 }
 
 /**
@@ -113,13 +113,13 @@ void sign::create_a_share(const name &owner, asset in, const vector<string> &par
     @param referrer 增加誰的
     @param quantity 加多少
 */
-void sign::add_share_income(const name &owner, const asset &quantity){
+void sign::add_share_income(const name &owner, const asset &quantity, const uint64_t &signId){
     singleton_players_t _player(_self, owner.value);
     auto p = _player.get_or_create(_self, player_info{});
     p.share_income += quantity.amount;
     _player.set(p, _self);
     string str{"share income"};
-    SEND_INLINE_ACTION(*this, bill, { _self, "active"_n }, { str, owner, quantity });
+    SEND_INLINE_ACTION(*this, bill, { _self, "active"_n }, { str, owner, quantity, signId });
 }
 
 /**
@@ -128,13 +128,13 @@ void sign::add_share_income(const name &owner, const asset &quantity){
     @param referrer 增加誰的
     @param quantity 加多少
 */
-void sign::add_sign_income(const name &owner, const asset &quantity){
+void sign::add_sign_income(const name &owner, const asset &quantity, const uint64_t &signId){
     singleton_players_t _player(_self, owner.value);
     auto p = _player.get_or_create(_self, player_info{});
     p.sign_income += quantity.amount;
     _player.set(p, _self);
     string str{"sign income"};
-    SEND_INLINE_ACTION(*this, bill, { _self, "active"_n }, { str, owner, quantity });
+    SEND_INLINE_ACTION(*this, bill, { _self, "active"_n }, { str, owner, quantity, signId });
 }
 
 /**
@@ -186,16 +186,21 @@ void sign::onTransfer(name from, name to, asset in, string memo)
 
     if (params[0] == "support") // 打賞
     {
-        create_a_share(from, in, params);
+        // 先扣錢才分錢，流程上在前面，所以 bill 改至前面
         string str{"support expenses"};
         in = -in;
-        SEND_INLINE_ACTION(*this, bill, { _self, "active"_n }, { str, from, in });
+        const auto signId = string_to_int(params[1]);
+        SEND_INLINE_ACTION(*this, bill, { _self, "active"_n }, { str, from, in, signId });
+
+        create_a_share(from, in, params);
+
         return;
     }
     if (params[0] == "billtest") 
     {
         string str{"test income"};
-        SEND_INLINE_ACTION(*this, bill, { _self, "active"_n }, { str, from, in });
+        const auto signId = string_to_int(params[1]);
+        SEND_INLINE_ACTION(*this, bill, { _self, "active"_n }, { str, from, in, signId });
         action(
             permission_level{_self, "active"_n},
             EOS_CONTRACT, "transfer"_n,
